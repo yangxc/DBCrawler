@@ -21,7 +21,6 @@ import com.peraglobal.model.Crawler;
  *  @version 1.0 
  *  </br>最后修改人 无
  */
-
 @RestController
 @RequestMapping("crawler")
 public class CrawlerController {
@@ -34,7 +33,7 @@ public class CrawlerController {
 	@RequestMapping(value = "/getCrawler")
 	@ResponseBody
 	public String findCrawlerByCrawlerId(String crawlerId) {
-		Crawler crawler = crawlerMapper.findCrawlerByCrawlerId("1001");
+		Crawler crawler = crawlerMapper.findCrawlerByCrawlerId(crawlerId);
 		String crawlerName = crawler.getCrawlerName();
 		return crawlerName;
 	}
