@@ -32,10 +32,16 @@ public class CrawlerController {
 	
 	@RequestMapping(value = "/getCrawler")
 	@ResponseBody
-	public String findCrawlerByCrawlerId(String crawlerId) {
+	public String getCrawler(String crawlerId) {
 		Crawler crawler = crawlerMapper.findCrawlerByCrawlerId(crawlerId);
 		String crawlerName = crawler.getCrawlerName();
 		return crawlerName;
+	}
+	
+	@RequestMapping(value = "/findCrawler")
+	@ResponseBody
+	public String findCrawler() {
+		return "测试 RESTFul 功能！";
 	}
 	
 }

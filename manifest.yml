@@ -1,0 +1,8 @@
+---
+applications:
+- name: DBCrawler
+  memory: 512M
+  host: DBCrawler
+  domain: bosh-lite.com
+  services:
+  - perascrapy-mysql
