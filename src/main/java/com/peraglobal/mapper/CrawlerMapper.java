@@ -37,7 +37,7 @@ public interface CrawlerMapper {
 	 * @return Crawler 任务
 	 */
     @Select("select * from Crawler where crawlerId = #{crawlerId}")
-    public Crawler getCrawler(String taskId);
+    public Crawler getCrawler(String crawlerId);
    
 	/**
 	 * 根据数据库采集名称和组 ID 数据库采集

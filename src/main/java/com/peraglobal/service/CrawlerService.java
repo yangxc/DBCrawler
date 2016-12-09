@@ -12,7 +12,7 @@ import com.peraglobal.model.CrawlerConst;
 
 /**
  *  <code>TaskService.java</code>
- *  <p>功能:任务功能 Service
+ *  <p>功能:数据库采集功能 Service
  *  
  *  <p>Copyright 安世亚太 2016 All right reserved.
  *  @author yongqian.liu	

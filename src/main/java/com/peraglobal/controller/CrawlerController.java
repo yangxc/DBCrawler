@@ -75,7 +75,7 @@ public class CrawlerController {
 	 */
 	@SuppressWarnings("static-access")
 	@RequestMapping(value = "/createCrawler", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> createTask(@RequestBody Crawler crawler) {
+	public ResponseEntity<String> createCrawler(@RequestBody Crawler crawler) {
 		try {
 			String crawlerId = crawlerService.createCrawler(crawler);
 			if(crawlerId != null) {
@@ -92,7 +92,7 @@ public class CrawlerController {
 	 * @since 1.0
 	 */
 	@RequestMapping(value = "/removeCrawler/{crawlerId}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> removeTask(@PathVariable("crawlerId") String crawlerId) {
+	public ResponseEntity<?> removeCrawler(@PathVariable("crawlerId") String crawlerId) {
 		try {
 			crawlerService.removeCrawler(crawlerId);
 			return new ResponseEntity<>(HttpStatus.OK);
@@ -107,7 +107,7 @@ public class CrawlerController {
 	 * @since 1.0
 	 */
 	@RequestMapping(value = "/editCrawler", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> editTask(@RequestBody Crawler crawler) {
+	public ResponseEntity<?> editCrawler(@RequestBody Crawler crawler) {
 		try {
 			crawlerService.editCrawler(crawler);
 			return new ResponseEntity<>(HttpStatus.OK);

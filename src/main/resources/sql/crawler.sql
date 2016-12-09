@@ -1,6 +1,6 @@
 -- 数据库采集表
-DROP TABLE IF EXISTS `crawler`;
-CREATE TABLE `crawler` (
+DROP TABLE IF EXISTS `Crawler`;
+CREATE TABLE `Crawler` (
   `crawlerId` varchar(50) NOT NULL DEFAULT '' COMMENT 'ID',
   `crawlerName` varchar(500) NOT NULL DEFAULT '' COMMENT '名称',
   `groupId` varchar(500) NOT NULL DEFAULT '' COMMENT '组ID',
