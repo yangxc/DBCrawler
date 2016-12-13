@@ -1,4 +1,4 @@
-package com.peraglobal.service;
+package com.peraglobal.db.service;
 
 import java.util.Date;
 import java.util.List;
@@ -6,9 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.peraglobal.mapper.CrawlerMapper;
-import com.peraglobal.model.Crawler;
-import com.peraglobal.model.CrawlerConst;
+import com.peraglobal.db.mapper.CrawlerMapper;
+import com.peraglobal.db.model.Crawler;
+import com.peraglobal.db.model.CrawlerConst;
 
 /**
  *  <code>TaskService.java</code>

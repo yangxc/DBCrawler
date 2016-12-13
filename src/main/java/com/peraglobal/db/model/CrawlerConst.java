@@ -1,4 +1,4 @@
-package com.peraglobal.model;
+package com.peraglobal.db.model;
 
 /**
  *  <code>TaskConst.java</code>

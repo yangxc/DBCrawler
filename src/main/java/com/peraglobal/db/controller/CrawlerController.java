@@ -1,4 +1,4 @@
-package com.peraglobal.controller;
+package com.peraglobal.db.controller;
 
 import java.util.List;
 
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.peraglobal.model.Crawler;
-import com.peraglobal.service.CrawlerService;
+import com.peraglobal.db.model.Crawler;
+import com.peraglobal.db.service.CrawlerService;
 
 
 /**

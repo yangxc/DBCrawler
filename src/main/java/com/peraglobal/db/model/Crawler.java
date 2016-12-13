@@ -1,8 +1,11 @@
-package com.peraglobal.model;
+package com.peraglobal.db.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Crawler {
+public class Crawler  implements Serializable {
+
+	private static final long serialVersionUID = 5216815372804434669L;
 
 	/**
 	 * @category 采集 ID
