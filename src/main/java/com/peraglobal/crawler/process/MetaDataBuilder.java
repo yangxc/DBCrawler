@@ -1,7 +1,5 @@
 package com.peraglobal.crawler.process;
 
-import static com.peraglobal.crawler.process.DataImportException.SEVERE;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -14,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
@@ -25,22 +22,17 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSFile;
-import com.peraglobal.crawler.model.DBSpiderRecord;
-import com.peraglobal.crawler.model.Entity;
-import com.peraglobal.crawler.model.EntityField;
+import com.peraglobal.common.ApplicationContextUtil;
+import com.peraglobal.crawler.model.Table;
+import com.peraglobal.crawler.model.Field;
 import com.peraglobal.crawler.model.SpiderConfiguration;
-
 import com.peraglobal.crawler.util.ConverterUtil;
-import com.peraglobal.crawler.util.IDGenerate;
-import com.peraglobal.crawler.util.ApplicationContextUtil;
 import com.peraglobal.mongo.service.DatumService;
 
 /**
@@ -48,49 +40,44 @@ import com.peraglobal.mongo.service.DatumService;
  */
 public class MetaDataBuilder {
 
-	private static final Logger LOG = LoggerFactory.getLogger(MetaDataBuilder.class);
 	DataImporter dataImporter;
-	private SpiderConfiguration config;
 	private final RequestInfo params;
 	private Map<String, Object> session = new HashMap<String, Object>();// 全局缓存
 	private final static String FILETPYEDOT = ".";
-
+	private final static int FileTypes = 3008;
+	
 	@Resource
 	private DatumService datumService;
 
-	public MetaDataBuilder(DataImporter dataImporter, RequestInfo params) {
-		this.dataImporter = dataImporter;
+	public MetaDataBuilder(RequestInfo params, DataImporter dataImporter) {
 		this.params = params;
+		this.dataImporter = dataImporter;
+		initEntityProcessor(this.params.getTaskId());
+		
 		datumService = (DatumService) ApplicationContextUtil.getBean("datumService");
-		initEntityProcessor(params.getTaskId());
-	}
-
-	// 实例化SqlEntityProcessor
-	public EntityProcessor getEntityProcessor(Entity entity, SpiderConfiguration config) {
-		EntityProcessor entityProcessor = new SqlEntityProcessor(entity, config);
-		return entityProcessor;
 	}
 
 	private void initEntityProcessor(String taskId) {
 		try {
-			this.config = dataImporter.getConfig();
-			// 实例化EntityProcessor
-			MetaDataBuiderSpider metaDataBuiderSpider = null;
-			for (Entity e : config.getEntities()) {
-				metaDataBuiderSpider = new MetaDataBuiderSpider(e.getName(), this.getEntityProcessor(e, config));
-				SpiderManager.register(taskId, metaDataBuiderSpider);
-			}
-
+			Table table = dataImporter.getConfig().getTable();
+			SpiderConfiguration sc = dataImporter.getConfig();
+			SqlEntityProcessor sep = new SqlEntityProcessor(table, sc);
+			// 实例化SqlEntityProcessor
+			MetaDataBuiderSpider mdbs = new MetaDataBuiderSpider(table.getName(), sep);
+			SpiderManager.register(taskId, mdbs);
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
-	private void assemblingMetaDataFields(Entity entity, MetaDataWrapper metaData, Map<String, Object> arow) {
+	private void assemblingMetaDataFields(Table table, MetaDataWrapper metaData, Map<String, Object> arow) {
 		MetaDataField metaDataField = null;
 		FileDataField fileDataField = null;
 		String mongoID = null;
 		List<MetaDataField> rowMetaDataFields = new ArrayList<MetaDataField>();
 		List<FileDataField> rowFileDataFields = new ArrayList<FileDataField>();
+		
+		/*
 		for (Map.Entry<String, Object> arowData : arow.entrySet()) {
 			String key = arowData.getKey();
 			Object value = arowData.getValue();
@@ -118,22 +105,13 @@ public class MetaDataBuilder {
 							fileDataField = new FileDataField();
 							if (null != value) {
 								String url = String.valueOf(value);
-								String temp = url;
-								String fileName = url.substring(url.lastIndexOf(File.separator) + 1,
-										url.lastIndexOf(FILETPYEDOT));
-								String fileType = temp.substring(temp.lastIndexOf(FILETPYEDOT), temp.length());
 								HttpGet httpget = HttpDownloadHandler.getHttpGet(url);
-								String dataFileTempFullPath = metaData.getDataFileTempPath() + IDGenerate.uuid();
-
-								Map map = getInputStream(url, httpget);
+								Map<String, Object> map = getInputStream(url, httpget);
 								try {
-									if (null != map) {
-									}
 									fileDataField.setDataTempPath(map.get("mongoID"));
 								} finally {
 									HttpDownloadHandler.releaseConnection(httpget);
 								}
-
 								fileDataField.setType(type);
 								fileDataField.setName(map.get("fileName").toString());
 								fileDataField.setFileNameValue(map.get("mongoID").toString());
@@ -151,14 +129,14 @@ public class MetaDataBuilder {
 						} else {
 							metaDataField.setValue(null != value ? String.valueOf(value) : "");
 						}
-						if (name.equalsIgnoreCase(entity.getPk().trim())) {
+						if (name.equalsIgnoreCase(table.getPk().trim())) {
 							metaData.setPk(null != value ? String.valueOf(value) : "");
 						}
 						rowMetaDataFields.add(metaDataField);
 					}
 				}
 			}
-		}
+		}*/
 		// 填充文件类型关联的文件名称和文件类型
 		for (FileDataField fdf : rowFileDataFields) {
 			for (Map.Entry<String, Object> arowData : arow.entrySet()) {
@@ -183,7 +161,6 @@ public class MetaDataBuilder {
 					mdf.setValue(metaData.getDataFilePath() + fdf.getFileNameValue() + fileType);
 				}
 			}
-
 		}
 		metaData.setRowFileDataFields(rowFileDataFields);
 		metaData.setRowMetaDataFields(rowMetaDataFields);
@@ -200,24 +177,21 @@ public class MetaDataBuilder {
 				if (null != dataTempPath) {
 					GridFSDBFile dbFile = datumService.findFileById(dataTempPath.toString());
 					InputStream in = dbFile.getInputStream();
-
 					sb.append(IOUtils.toString(in));
 					IOUtils.closeQuietly(in);
 				}
 			} catch (IOException e) {
-				throw new DataImportException(DataImportException.SEVERE, e);
+				e.printStackTrace();
 			}
 		}
-		String value = null;
 		metaData.setKvs(metaData.createXML());
 		metaData.setObjKvs(metaData.createObjKvs());
 		sb.append(metaData.getKvs());
 		if (!"".equals(sb.toString()))
 			metaData.setMd5(ConverterUtil.EncoderByMd5(sb.toString()));
-
 	}
 
-	public Map getInputStream(String url, HttpGet httpget) {
+	public Map<String, Object> getInputStream(String url, HttpGet httpget) {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		try {
 			HttpResponse response = httpclient.execute(httpget);
@@ -247,7 +221,7 @@ public class MetaDataBuilder {
 			fileName = ConverterUtil.EncoderByMd5(url);
 			try {
 				GridFSFile inputFile = datumService.storeFile(in, fileName + "." + fileType);
-				Map map = new HashMap();
+				Map<String, Object> map = new HashMap<String, Object>();
 				map.put("fileName", fileName);
 				map.put("fileType", fileType);
 				map.put("mongoID", inputFile.getId());
@@ -260,10 +234,7 @@ public class MetaDataBuilder {
 		} finally {
 		}
 		return null;
-
 	}
-
-	private final static int FileTypes = 3008;
 
 	class MetaDataBuiderSpider extends SdcSpider {
 
@@ -287,13 +258,11 @@ public class MetaDataBuilder {
 
 		@Override
 		public void execute() {
-			long start = System.nanoTime();
 			// 初始化上下文 上下文的范围EntityProcessor
 			ContextImpl ctx = new ContextImpl(ep, null, null, session, Context.FULL_DUMP);
 			// 初始化sql实体处理类
 			ep.init(ctx);
 			SqlEntityProcessor sep = (SqlEntityProcessor) ep;
-			int count = sep.getMarkSize();
 			while (true) {
 				MetaDataWrapper metaData = new MetaDataWrapper();
 				try {
@@ -305,28 +274,20 @@ public class MetaDataBuilder {
 					}
 					if (spiderMonitor())
 						break;
-
-					assemblingMetaDataFields(sep.getEntity(), metaData, arow);
+					assemblingMetaDataFields(sep.getTable(), metaData, arow);
 					generateMD5(metaData);
 
 					// 持久化数据
 					metaDataDBHandler.storage(metaData);
-					// 记录断点位置
-					sep.mark(count, this.getSpiderState(), metaData);
-					count++;
 				} catch (Exception t) {
-					throw new DataImportException(DataImportException.SEVERE, t);
-
+					t.printStackTrace();
 				}
 			}
-			LOG.info("  run " + ((SqlEntityProcessor) ep).getEntityName() + " end time " + "["
-					+ TimeUnit.MILLISECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS) + " ms]");// 单位毫秒
 		}
 
 		private void init(Object obj) {
 			if (null != obj) {
 				if (obj instanceof MetaDataWrapper) {
-
 					MetaDataWrapper metaData = (MetaDataWrapper) obj;
 					SqlEntityProcessor sep = (SqlEntityProcessor) ep;
 					metaData.setTaskId(sep.getTaskId());
@@ -342,20 +303,7 @@ public class MetaDataBuilder {
 
 		private void destory(MetaDataWrapper metaData) {
 			SqlEntityProcessor sep = (SqlEntityProcessor) ep;
-			// === 写入状态停止
-			DBSpiderRecord.removeRecord(
-					config.getRequestInfo().getSpiderRecordFilePath() + sep.getTaskId() + DBSpiderRecord.LOGFILETYPE,
-					sep.getTaskId());
 			metaData.deleteDir(new File(metaData.getDataFileTempPath()));
-			sep.getDataSource().close();
-		}
-
-		private void destoryAndPause() {
-			SqlEntityProcessor sep = (SqlEntityProcessor) ep;
-			// === 写入任务工程执行报错
-			DBSpiderRecord.removeRecord(
-					config.getRequestInfo().getSpiderRecordFilePath() + sep.getTaskId() + DBSpiderRecord.LOGFILETYPE,
-					sep.getTaskId());
 			sep.getDataSource().close();
 		}
 	}
@@ -458,13 +406,30 @@ public class MetaDataBuilder {
 	}
 
 	class MetaDataWrapper {
-		private List<MetaDataField> rowMetaDataFields = new ArrayList<MetaDataField>();
-		private List<FileDataField> rowFileDataFields = new ArrayList<FileDataField>();
+		
+		private final static String ROOTELEMENT = "metadata";
+		private final static String FIELDSELEMENT = "fields";
+		private final static String FIELDELEMENT = "field";
+		public final static String FILETPYEDOT = ".";
+		
 		private String taskId;
 		private String md5;
 		private String pk;
 		private String kvs;
 		private DBObject objKvs;
+		private String dataFilePath;// 文件输出路径 test use
+		private String metaDataFilePath;// 元数据输出路径 test use
+		private String dataFileTempPath;// 临时数据文件路径 system use
+		private List<MetaDataField> rowMetaDataFields = new ArrayList<MetaDataField>();
+		private List<FileDataField> rowFileDataFields = new ArrayList<FileDataField>();
+		
+		public String getDataFileTempPath() {
+			return dataFileTempPath;
+		}
+
+		public void setDataFileTempPath(String dataFileTempPath) {
+			this.dataFileTempPath = dataFileTempPath;
+		}
 
 		public String getPk() {
 			return pk;
@@ -540,7 +505,6 @@ public class MetaDataBuilder {
 
 		public String createXML() {
 			if (null != rowMetaDataFields && rowMetaDataFields.size() > 0) {
-				// this.createXML(rowMetaDataFields, this.metaDataFilePath);
 				return this.createXML(rowMetaDataFields);
 			}
 			return null;
@@ -561,7 +525,6 @@ public class MetaDataBuilder {
 				e.printStackTrace();
 			} finally {
 			}
-
 			return xml.getXmlStr();
 		}
 
@@ -603,23 +566,16 @@ public class MetaDataBuilder {
 				e.printStackTrace();
 			} finally {
 			}
-
 		}
 
 		/**
 		 * 下载Blob,Clob filePath 为String类型的路径+文件名
-		 * 
-		 * @throws FileNotFoundException
-		 * @throws UnsupportedEncodingException
 		 */
-		public void writeToFile(InputStream input, String filePath)
-				throws FileNotFoundException, UnsupportedEncodingException {
+		public void writeToFile(InputStream input, String filePath) throws FileNotFoundException, UnsupportedEncodingException {
 			// 创建文件对象
 			String dirs = filePath.substring(0, filePath.lastIndexOf(File.separator));
 			File file = new File(dirs);
 			if (file.mkdirs())
-				;
-
 			file = new File(filePath);
 			// 创建文件输出流
 			FileOutputStream output = new FileOutputStream(file);
@@ -631,7 +587,7 @@ public class MetaDataBuilder {
 					output.write(b, 0, len);
 				}
 			} catch (IOException e) {
-				throw new DataImportException(SEVERE, "write file err", e);
+				e.printStackTrace();
 			} finally {
 				try {
 					if (input != null) {
@@ -641,20 +597,14 @@ public class MetaDataBuilder {
 						output.close();
 					}
 				} catch (IOException e) {
-					throw new DataImportException(SEVERE, "close outputStream err", e);
-
+					e.printStackTrace();
 				}
 			}
 		}
 
 		/**
 		 * 递归删除目录下的所有文件及子目录下所有文件
-		 * 
-		 * @param dir
-		 *            将要删除的文件目录
-		 * @return boolean Returns "true" if all deletions were successful. If a
-		 *         deletion fails, the method stops attempting to delete and
-		 *         returns "false".
+		 * @param dir 将要删除的文件目录
 		 */
 		public boolean deleteDir(File dir) {
 			if (dir.isDirectory()) {
@@ -679,23 +629,5 @@ public class MetaDataBuilder {
 			}
 			return false;
 		}
-
-		private final static String ROOTELEMENT = "metadata";
-		private final static String FIELDSELEMENT = "fields";
-		private final static String FIELDELEMENT = "field";
-		public final static String FILETPYEDOT = ".";
-		private String dataFilePath;// 文件输出路径 test use
-		private String metaDataFilePath;// 元数据输出路径 test use
-
-		private String dataFileTempPath;// 临时数据文件路径 system use
-
-		public String getDataFileTempPath() {
-			return dataFileTempPath;
-		}
-
-		public void setDataFileTempPath(String dataFileTempPath) {
-			this.dataFileTempPath = dataFileTempPath;
-		}
 	}
-
 }

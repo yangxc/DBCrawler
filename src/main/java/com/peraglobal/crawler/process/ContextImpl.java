@@ -94,7 +94,7 @@ public class ContextImpl extends Context {
 	public String getEntityAttribute(String name) {
 		if (ep instanceof SqlEntityProcessor) {
 			SqlEntityProcessor sep = (SqlEntityProcessor) ep;
-			return sep == null || sep.getEntity() == null ? null : sep.getEntity().getAllAttributes().get(name);
+			//return sep == null || sep.getTable() == null ? null : sep.getTable().getAllAttributes().get(name);
 		}
 		return null;
 
@@ -104,7 +104,7 @@ public class ContextImpl extends Context {
 	public List<Map<String, String>> getAllEntityFields() {
 		if (ep instanceof SqlEntityProcessor) {
 			SqlEntityProcessor sep = (SqlEntityProcessor) ep;
-			return sep == null || sep.getEntity() == null ? Collections.EMPTY_LIST : sep.getEntity().getAllFieldsList();
+			//return sep == null || sep.getTable() == null ? Collections.EMPTY_LIST : sep.getTable().getAllFieldsList();
 		}
 		return Collections.EMPTY_LIST;
 	}

@@ -12,7 +12,7 @@ import com.peraglobal.db.model.CrawlerConst;
 
 /**
  *  <code>TaskService.java</code>
- *  <p>功能:数据库采集功能 Service
+ *  <p>功能:数据库采集业务逻辑功能 Service
  *  
  *  <p>Copyright 安世亚太 2016 All right reserved.
  *  @author yongqian.liu	
@@ -25,6 +25,9 @@ public class CrawlerService {
 	
 	@Autowired
     private CrawlerMapper crawlerMapper;
+	
+	@Autowired
+    private SpiderService spiderService;
 	
 	/**
 	 * 根据组 ID 查询数据库采集列表
@@ -109,13 +112,18 @@ public class CrawlerService {
 	 * @throws Exception
 	 */
 	public void start(String crawlerId) throws Exception {
-		Crawler c = crawlerMapper.getCrawler(crawlerId);
+		Crawler crawler = crawlerMapper.getCrawler(crawlerId);
+		
 		// 数据库采集状态为：非开始，则开始任务
-		if(c != null && !c.getState().equals(CrawlerConst.STATE_STRAT)) {
+		if(crawler != null && !crawler.getState().equals(CrawlerConst.STATE_STRAT)) {
+			
 			// 更新任务状态
-			c.setState(CrawlerConst.STATE_STRAT);
-			c.setUpdateTime(new Date());
-			crawlerMapper.updateStateByCrawler(c);
+			crawler.setState(CrawlerConst.STATE_STRAT);
+			crawler.setUpdateTime(new Date());
+			crawlerMapper.updateStateByCrawler(crawler);
+			
+			// 执行爬虫采集开始功能
+			spiderService.start(crawler);
 		}
 	}
 
@@ -125,13 +133,18 @@ public class CrawlerService {
 	 * @throws Exception
 	 */
 	public void stop(String crawlerId) throws Exception {
-		Crawler t = crawlerMapper.getCrawler(crawlerId);
+		Crawler crawler = crawlerMapper.getCrawler(crawlerId);
+		
 		// 数据库采集状态为：开始，则停止
-		if(t != null && t.getState().equals(CrawlerConst.STATE_STRAT)) {
+		if(crawler != null && crawler.getState().equals(CrawlerConst.STATE_STRAT)) {
+			
 			// 更新数据库采集状态为停止
-			t.setState(CrawlerConst.STATE_STOP);
-			t.setUpdateTime(new Date());
-			crawlerMapper.updateStateByCrawler(t);
+			crawler.setState(CrawlerConst.STATE_STOP);
+			crawler.setUpdateTime(new Date());
+			crawlerMapper.updateStateByCrawler(crawler);
+			
+			// 执行爬虫采集停止功能
+			spiderService.stop(crawler);
 		}
 	}
 }

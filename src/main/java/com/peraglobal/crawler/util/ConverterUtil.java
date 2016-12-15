@@ -1,11 +1,9 @@
 package com.peraglobal.crawler.util;
 
-
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 public class ConverterUtil {
 	

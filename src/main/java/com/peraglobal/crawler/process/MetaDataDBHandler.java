@@ -26,14 +26,16 @@ import com.peraglobal.db.service.AttachmentService;
 public class MetaDataDBHandler {
 
 	@Resource
+	private DatumService datumService;
+	
+	@Resource
 	private AttachmentService attachmentService;
 
-	@Resource
-	private DatumService datumService;
-	private AtomicLong successCount = new AtomicLong(0);
-	private AtomicLong failCount = new AtomicLong(0);
 	private boolean isAdd = false;
 	private boolean isUpdated = false;
+	private AtomicLong failCount = new AtomicLong(0);
+	private AtomicLong successCount = new AtomicLong(0);
+	
 
 	// 修改成功数
 	private void monitor(MetaDataWrapper metaData) {

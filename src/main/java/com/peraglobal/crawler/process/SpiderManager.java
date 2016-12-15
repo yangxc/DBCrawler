@@ -11,6 +11,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.peraglobal.crawler.model.DbConst;
+
 /**
  * 爬虫线程管理
  * 
@@ -18,16 +20,11 @@ import org.slf4j.LoggerFactory;
  */
 public class SpiderManager {
 
-	public final static String START = "start";
-	public final static String STOP = "stop";
-	public final static String PUASE = "puase";
-	public final static String RECOVER = "recover";
-
 	private static final Logger log = LoggerFactory.getLogger(SpiderManager.class);
 
+	private static Lock lock = new ReentrantLock();
 	private static ConcurrentMap<String, SdcSpider> spiderMap = new ConcurrentHashMap<String, SdcSpider>(); // 多线程并发安全，写与写互斥
 	private static ExecutorService execService = Executors.newCachedThreadPool();
-	private static Lock lock = new ReentrantLock();
 	private static ConcurrentMap<String, SdcSpider> destorySpiderMap = new ConcurrentHashMap<String, SdcSpider>(); // 多线程并发安全，写与写互斥
 
 	public static ExecutorService getExecService() {
@@ -89,7 +86,7 @@ public class SpiderManager {
 				return;
 			}
 			destorySpiderMap.put(key, spider);// 待销毁的爬虫
-			spider.setSpiderState(START);
+			spider.setSpiderState(DbConst.START);
 			execService.execute(spider);
 			log.info(spider.getSpiderName() + " spider already run!");
 		} finally {
@@ -111,7 +108,7 @@ public class SpiderManager {
 				return;
 			}
 			destorySpiderMap.put(key, spider);// 待销毁的爬虫
-			spider.setSpiderState(START);
+			spider.setSpiderState(DbConst.START);
 			execService.execute(spider);
 			log.error(spider.getSpiderName() + "  spider already  recover!");
 		} finally {
@@ -132,7 +129,7 @@ public class SpiderManager {
 				log.info("not found  " + key + "  spider task!");
 				return;
 			}
-			spider.setSpiderState(STOP);
+			spider.setSpiderState(DbConst.STOP);
 			log.info(spider.getSpiderName() + "  spider already  stop!");
 		} finally {
 			lock.unlock();
@@ -152,7 +149,7 @@ public class SpiderManager {
 				log.info("not found  " + key + "  spider task!");
 				return;
 			}
-			spider.setSpiderState(PUASE);
+			spider.setSpiderState(DbConst.PUASE);
 			log.info(spider.getSpiderName() + "  spider already pause!");
 		} finally {
 			lock.unlock();

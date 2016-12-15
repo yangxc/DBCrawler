@@ -1,22 +1,13 @@
 package com.peraglobal.crawler.process;
 
+import com.peraglobal.crawler.model.DbConst;
+
 /**
  * 爬虫任务基类
- * 
  * @author hadoop
- *
  */
 public abstract class SdcSpider implements Runnable {
-
-	/**
-	 * 线程业务处理
-	 */
-	public abstract void execute();
-
-	public final static String STOP = "stop";
-	public final static String PUASE = "puase";
-	public final static String RECOVER = "recover";
-
+	
 	private String spiderState;
 	private String spiderName;
 
@@ -36,6 +27,11 @@ public abstract class SdcSpider implements Runnable {
 		this.spiderName = spiderName;
 	}
 
+	/**
+	 * 线程业务处理
+	 */
+	public abstract void execute();
+	
 	@Override
 	public void run() {
 		this.execute();
@@ -45,11 +41,11 @@ public abstract class SdcSpider implements Runnable {
 	 * 爬虫监视器
 	 */
 	public boolean spiderMonitor() {
-		if (PUASE.equals(spiderState)) {
+		if (DbConst.PUASE.equals(spiderState)) {
 			// condition.await();//等待
 			return true;
 		}
-		if (STOP.equals(spiderState)) {
+		if (DbConst.STOP.equals(spiderState)) {
 			return true;// 退出
 		}
 		return false;

@@ -1,7 +1,5 @@
 package com.peraglobal.crawler.process;
 
-import static com.peraglobal.crawler.process.DataImportException.SEVERE;
-
 import com.peraglobal.crawler.model.SpiderConfiguration;
 
 public class DataImporter {
@@ -31,9 +29,9 @@ public class DataImporter {
 	 */
 	private void doImport(RequestInfo params) {
 		try {
-			new MetaDataBuilder(this, params);
+			new MetaDataBuilder(params, this);
 		} catch (Exception e) {
-			throw new DataImportException(SEVERE, "Exception  Import", e);
+			// Exception  Import
 		}
 	}
 

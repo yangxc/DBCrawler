@@ -7,6 +7,9 @@ import java.util.Map;
 
 public class CacheSupport {
 
+	public static final String CACHE_IMPL = "com.peraglobal.crawler.process.CacheImp";
+	public static final String CACHE_PRIMARY_KEY = "cacheKey";
+	
 	private String cacheImplName;
 	private Map<String, Cache> queryVsCache = new HashMap<String, Cache>();
 	private Map<String, Iterator<Map<String, Object>>> queryVsCacheIterator = new HashMap<String, Iterator<Map<String, Object>>>();
@@ -25,8 +28,7 @@ public class CacheSupport {
 			cache = constr.newInstance();
 			cache.open(context);
 		} catch (Exception e) {
-			throw new DataImportException(DataImportException.SEVERE,
-					"Unable to load Cache implementation:" + cacheImplName, e);
+			// Unable to load Cache implementation
 		}
 		return cache;
 	}
@@ -97,7 +99,6 @@ public class CacheSupport {
 			Iterator<Map<String, Object>> cacheIter = queryVsCacheIterator.get(query);
 			dataSourceRowCache = cacheIter;
 		}
-
 		return getFromRowCacheTransformed();
 	}
 
@@ -109,22 +110,4 @@ public class CacheSupport {
 		Map<String, Object> r = dataSourceRowCache.next();
 		return r;
 	}
-
-	/**
-	 * <p>
-	 * Specify the class for the cache implementation
-	 * </p>
-	 */
-	// public static final String CACHE_IMPL =
-	// "com.peraglobal.dataimport.CacheImp";
-	public static final String CACHE_IMPL = "com.peraglobal.km.crawler.db.biz.CacheImp";
-
-	/**
-	 * <p>
-	 * Specify the Primary Key field from this Entity to map the input records
-	 * with
-	 * </p>
-	 */
-	public static final String CACHE_PRIMARY_KEY = "cacheKey";
-
 }

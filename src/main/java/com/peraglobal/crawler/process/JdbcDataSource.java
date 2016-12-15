@@ -1,8 +1,5 @@
 package com.peraglobal.crawler.process;
 
-import static com.peraglobal.crawler.process.DataImportException.SEVERE;
-import static com.peraglobal.crawler.process.DataImportException.wrapAndThrow;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -22,30 +19,17 @@ import java.util.concurrent.TimeUnit;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-/**
- * <p>
- * A DataSource implementation which can fetch data using JDBC.
- * </p>
- */
 public class JdbcDataSource extends DataSource<Iterator<Map<String, Object>>> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(JdbcDataSource.class);
+	public static Map<String, Integer> fieldNameVsType = new HashMap<String, Integer>();
+	private static final long CONN_TIME_OUT = TimeUnit.NANOSECONDS.convert(10, TimeUnit.SECONDS);
+	
 	protected Callable<Connection> factory;
 	private long connLastUsed = 0;
+	private boolean isClosed = false;
 	private Connection conn;
-	public static Map<String, Integer> fieldNameVsType = new HashMap<String, Integer>();
+	private ResultSetIterator r;
 	
-	private static final long CONN_TIME_OUT = TimeUnit.NANOSECONDS.convert(10, TimeUnit.SECONDS);
-
-	public static final String URL = "url";
-
-	public static final String JNDI_NAME = "jndiName";
-
-	public static final String DRIVER = "driver";
-
 	@Override
 	public void init(Properties initProps) {
 		factory = createConnectionFactory(initProps);
@@ -58,20 +42,17 @@ public class JdbcDataSource extends DataSource<Iterator<Map<String, Object>>> {
 	 * @return
 	 */
 	protected Callable<Connection> createConnectionFactory(final Properties initProps) {
-		final String jndiName = initProps.getProperty(JNDI_NAME);
-		final String url = initProps.getProperty(URL);
-		final String driver = initProps.getProperty(DRIVER);
+		final String jndiName = initProps.getProperty("jndiName");
+		final String url = initProps.getProperty("url");
+		final String driver = initProps.getProperty("driver");
 
 		if (url == null && jndiName == null) {
-			throw new DataImportException(SEVERE, "JDBC URL or JNDI name has to be specified");
+			// JDBC URL or JNDI name has to be specified
 		}
 		return factory = new Callable<Connection>() {
 			@Override
 			public Connection call() throws Exception {
-
-				long start = System.nanoTime();
 				Connection c = null;
-
 				if (jndiName != null) {
 					c = getFromJndi(initProps, jndiName);
 				} else if (url != null) {
@@ -79,7 +60,7 @@ public class JdbcDataSource extends DataSource<Iterator<Map<String, Object>>> {
 						Class.forName(driver);
 						c = DriverManager.getConnection(url, initProps);
 					} catch (SQLException e) {
-						throw new DataImportException(SEVERE, "Exception initializing  connection", e);
+						// Exception initializing  connection
 					}
 				}
 				if (c != null) {
@@ -89,13 +70,11 @@ public class JdbcDataSource extends DataSource<Iterator<Map<String, Object>>> {
 						try {
 							c.close();
 						} catch (SQLException e2) {
-							LOG.warn("Exception closing connection during cleanup", e2);
+							// Exception closing connection during cleanup
 						}
-						throw new DataImportException(SEVERE, "Exception initializing SQL connection", e);
+						// Exception initializing SQL connection
 					}
 				}
-				LOG.info("Time taken for getConnection(): "
-						+ TimeUnit.MILLISECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS) + " ms");
 				return c;
 			}
 
@@ -131,12 +110,8 @@ public class JdbcDataSource extends DataSource<Iterator<Map<String, Object>>> {
 
 			/**
 			 * JNDI方式
-			 * 
 			 * @param initProps
 			 * @param jndiName
-			 * @return
-			 * @throws NamingException
-			 * @throws SQLException
 			 */
 			private Connection getFromJndi(final Properties initProps, final String jndiName)
 					throws NamingException, SQLException {
@@ -153,15 +128,12 @@ public class JdbcDataSource extends DataSource<Iterator<Map<String, Object>>> {
 						c = dataSource.getConnection(user, pass);
 					}
 				} else {
-					throw new DataImportException(SEVERE,
-							"the jndi name : '" + jndiName + "' is not a valid javax.sql.DataSource");
+					// the jndi name : '" + jndiName + "' is not a valid javax.sql.DataSource
 				}
 				return c;
 			}
 		};
 	}
-
-	private ResultSetIterator r;
 
 	@Override
 	public Iterator<Map<String, Object>> getData(String query, int markSize, int fetchSize) {
@@ -173,10 +145,6 @@ public class JdbcDataSource extends DataSource<Iterator<Map<String, Object>>> {
 		if (null != r) {
 			r.closeAll();
 		}
-	}
-
-	private void logError(String msg, Exception e) {
-		LOG.warn(msg, e);
 	}
 
 	private List<String> readFieldNames(ResultSetMetaData metaData) throws SQLException {
@@ -199,11 +167,8 @@ public class JdbcDataSource extends DataSource<Iterator<Map<String, Object>>> {
 
 	private class ResultSetIterator {
 		ResultSet resultSet;
-
 		Statement stmt = null;
-
 		List<String> colNames;
-
 		Iterator<Map<String, Object>> rSetIterator;
 
 		public void closeAll() {
@@ -212,13 +177,10 @@ public class JdbcDataSource extends DataSource<Iterator<Map<String, Object>>> {
 		}
 
 		public ResultSetIterator(String query, int markSize, int fetchSize) {
-
 			try {
 				Connection c = getConnection();
 				stmt = c.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 				stmt.setFetchSize(fetchSize);
-				LOG.info("Executing SQL: " + query);
-				long start = System.nanoTime();
 				if (stmt.execute(query)) {
 					resultSet = stmt.getResultSet();
 					if (markSize > 0) {
@@ -227,12 +189,10 @@ public class JdbcDataSource extends DataSource<Iterator<Map<String, Object>>> {
 						resultSet.beforeFirst();
 					}
 				}
-				LOG.trace("Time taken for sql :"
-						+ TimeUnit.MILLISECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS));
 				colNames = readFieldNames(resultSet.getMetaData());
 				fieldNameVsType = readFieldNamesVsType(resultSet.getMetaData());
 			} catch (Exception e) {
-				wrapAndThrow(SEVERE, e, "Unable to execute query: " + query);
+				// Unable to execute query
 			}
 			if (resultSet == null) {
 				rSetIterator = new ArrayList<Map<String, Object>>().iterator();
@@ -251,7 +211,7 @@ public class JdbcDataSource extends DataSource<Iterator<Map<String, Object>>> {
 				}
 
 				@Override
-				public void remove() {/* do nothing */
+				public void remove() {
 				}
 			};
 		}
@@ -262,7 +222,6 @@ public class JdbcDataSource extends DataSource<Iterator<Map<String, Object>>> {
 
 		/**
 		 * 获取一行数据
-		 * 
 		 * @return
 		 */
 		private Map<String, Object> getARow() {
@@ -306,8 +265,7 @@ public class JdbcDataSource extends DataSource<Iterator<Map<String, Object>>> {
 						break;
 					}
 				} catch (SQLException e) {
-					logError("Error reading data ", e);
-					wrapAndThrow(SEVERE, e, "Error reading data from database");
+					// Error reading data from database
 				}
 			}
 			return result;
@@ -325,7 +283,6 @@ public class JdbcDataSource extends DataSource<Iterator<Map<String, Object>>> {
 				}
 			} catch (SQLException e) {
 				close();
-				wrapAndThrow(SEVERE, e);
 				return false;
 			}
 		}
@@ -334,12 +291,10 @@ public class JdbcDataSource extends DataSource<Iterator<Map<String, Object>>> {
 			try {
 				if (resultSet != null)
 					resultSet.close();
-				LOG.info("resultSet is close!");
 				if (stmt != null)
 					stmt.close();
-				LOG.info("stmt is close!");
 			} catch (Exception e) {
-				logError("Exception while closing result set", e);
+				e.printStackTrace();
 			} finally {
 				resultSet = null;
 				stmt = null;
@@ -349,9 +304,6 @@ public class JdbcDataSource extends DataSource<Iterator<Map<String, Object>>> {
 
 	/**
 	 * 获取数据库connection 超时重新链接 10s
-	 * 
-	 * @return
-	 * @throws Exception
 	 */
 	private Connection getConnection() throws Exception {
 		long currTime = System.nanoTime();
@@ -372,16 +324,12 @@ public class JdbcDataSource extends DataSource<Iterator<Map<String, Object>>> {
 	protected void finalize() throws Throwable {
 		try {
 			if (!isClosed) {
-				LOG.error(
-						"JdbcDataSource was not closed prior to finalize(), indicates a bug -- POSSIBLE RESOURCE LEAK!!!");
 				close();
 			}
 		} finally {
 			super.finalize();
 		}
 	}
-
-	private boolean isClosed = false;
 
 	@Override
 	public void close() {
@@ -398,16 +346,11 @@ public class JdbcDataSource extends DataSource<Iterator<Map<String, Object>>> {
 				try {
 					conn.commit();
 				} catch (Exception ex) {
-					// ignore.
 				}
 				conn.close();
-				LOG.info("connect is close!");
 			}
 		} catch (Exception e) {
-			LOG.error("Ignoring Error when closing connection", e);
+			e.printStackTrace();
 		}
 	}
-
-	
-
 }

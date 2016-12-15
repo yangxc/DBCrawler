@@ -7,9 +7,7 @@ public class RequestHandler {
 
 	/**
 	 * 去掉url中的路径，留下请求参数部分
-	 * 
-	 * @param strURL
-	 *            url地址
+	 * @param strURL url地址
 	 * @return url请求参数部分
 	 */
 	private static String truncateUrl(String strURL) {
@@ -29,10 +27,8 @@ public class RequestHandler {
 
 	/**
 	 * 解析出url参数中的键值对 如 "index.jsp?Action=del&id=123"，解析出Action:del,id:123存入map中
-	 * 
-	 * @param URL
-	 *            url地址
-	 * @return url请求参数部分
+	 * @param URL url 地址
+	 * @return url 请求参数部分
 	 */
 	public static Map<String, Object> urlRequestParam(String url) {
 		Map<String, Object> mapRequest = new HashMap<String, Object>();

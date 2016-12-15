@@ -1,21 +1,12 @@
 package com.peraglobal.crawler.process;
 
-import static com.peraglobal.crawler.process.DataImportException.SEVERE;
-import static com.peraglobal.crawler.process.DataImportException.wrapAndThrow;
-
-import java.io.File;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.peraglobal.crawler.process.MetaDataBuilder.MetaDataWrapper;
-import com.peraglobal.crawler.model.DBSpiderRecord;
-import com.peraglobal.crawler.model.Entity;
+import com.peraglobal.crawler.model.DbConst;
 import com.peraglobal.crawler.model.SpiderConfiguration;
+import com.peraglobal.crawler.model.Table;
 
 /**
  * 实体处理器
@@ -24,8 +15,11 @@ import com.peraglobal.crawler.model.SpiderConfiguration;
  */
 public class SqlEntityProcessor extends EntityProcessor {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SqlEntityProcessor.class);
 	protected boolean isFirstInit = true;
+	
+	private String taskId;
+	private int markSize;// 断点标记
+	private int fetchSize;// 默认查询记录数
 	protected String entityName;
 	protected Context context;
 	protected DataSource dataSource;
@@ -34,32 +28,8 @@ public class SqlEntityProcessor extends EntityProcessor {
 	private String dataSourceName;
 	protected Iterator<Map<String, Object>> rowIterator;
 	protected String query;
-	protected Entity entity;
-	private int fetchSize;// 默认查询记录数
-	private int markSize;// 断点标记
-	private List<String> spiderLog;
-	private String spiderRecordFilePath;
-	private String taskId;
-	public final static String PUASE = "puase";
-	public final static String STOP = "stop";
-	public int logRate;// 记录日志频率
-
-	public SqlEntityProcessor(Entity entity, SpiderConfiguration config) {
-		this.query = entity.getQuery();
-		this.entity = entity;
-		this.dataSourceName = config.getDataSourceName();
-		this.dataSourceRule = config.getDataSourcesRule();
-		this.dataSource = getDataSourceInstance(dataSourceName);
-		this.entityName = entity.getName();
-		this.fetchSize = config.getRequestInfo().getFetchSize();
-		this.spiderRecordFilePath = config.getRequestInfo().getSpiderRecordFilePath();
-		this.taskId = config.getRequestInfo().getTaskId();
-		this.logRate = config.getRequestInfo().getLogRate();
-
-		// 解析当前任务断点标记
-		analysisDBSpiderRecord();
-	}
-
+	protected Table table;
+	
 	public String getTaskId() {
 		return taskId;
 	}
@@ -67,59 +37,65 @@ public class SqlEntityProcessor extends EntityProcessor {
 	public void setTaskId(String taskId) {
 		this.taskId = taskId;
 	}
-
-	public String getSpiderRecordFilePath() {
-		return spiderRecordFilePath;
+	
+	public DataSource getDataSource() {
+		return dataSource;
 	}
 
-	/**
-	 * format: taskId entityName firstSize fetchSize example: 2015-06-1116:35:09
-	 * xxx xxx xxx xxx
-	 */
-	public void analysisDBSpiderRecord() {
-		// 加载
-		loadDBSpiderRecord(taskId);
-		if (spiderLog != null) {
-			String[] strs = null;
-			for (String line : spiderLog) {
-				strs = line.split("\t");
-				if (null != strs && !"".equals(strs)) {
-					if (strs[1].equals(taskId)) {
-						this.markSize = Integer.parseInt(strs[3]);
-						this.fetchSize = Integer.parseInt(strs[4]);
-						break;
-					}
-				}
-			}
-		}
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
 	}
 
-	public void loadDBSpiderRecord(String taskId) {
-		if (DBSpiderRecord.existsRecord(spiderRecordFilePath + taskId + DBSpiderRecord.LOGFILETYPE)) {
-			this.spiderLog = DBSpiderRecord.readRecord(spiderRecordFilePath + taskId + DBSpiderRecord.LOGFILETYPE);
-		}
+	public String getDataSourceName() {
+		return dataSourceName;
 	}
 
-	public void mark(int count, String taskState, MetaDataWrapper metaData) {
-		this.setMarkSize(count);
-		String spiderLogFileFullPath = spiderRecordFilePath + taskId + DBSpiderRecord.LOGFILETYPE;
-		String message = "\t" + taskId + "\t" + entityName + "\t" + markSize + "\t" + fetchSize;
-		if (PUASE.equals(taskState)) {
-			DBSpiderRecord.writeRecord(spiderLogFileFullPath, message);
-		} else if (STOP.equals(taskState)) {
-			DBSpiderRecord.removeRecord(spiderLogFileFullPath, taskId);
-			metaData.deleteDir(new File(metaData.getDataFileTempPath()));
-		} else if (markSize % logRate == 0) {
-			DBSpiderRecord.writeRecord(spiderLogFileFullPath, message);
-		}
+	public Table getTable() {
+		return table;
+	}
+
+	public String getEntityName() {
+		return entityName;
+	}
+
+	public void setQuery(String query) {
+		this.query = query;
+	}
+
+	public int getFetchSize() {
+		return fetchSize;
+	}
+
+	public void setFetchSize(int fetchSize) {
+		this.fetchSize = fetchSize;
+	}
+
+	public int getMarkSize() {
+		return markSize;
+	}
+
+	public void setMarkSize(int markSize) {
+		this.markSize = markSize;
+	}
+	
+	public SqlEntityProcessor(Table table, SpiderConfiguration config) {
+		// 实体属性
+		this.table = table;
+		this.query = table.getQuery();
+		this.entityName = table.getName();
+		
+		// 配置信息
+		this.taskId = config.getRequestInfo().getTaskId();
+		this.dataSourceName = config.getDataSourceName();
+		this.dataSourceRule = config.getDataSourcesRule();
+		this.fetchSize = config.getRequestInfo().getFetchSize();
+		
+		// 数据库配置
+		this.dataSource = getDataSourceInstance(dataSourceName);
 	}
 
 	/**
 	 * 实例化dataSource
-	 * 
-	 * @param key
-	 * @param name
-	 *            <datasource name="gecko"/>
 	 * @return
 	 */
 	public DataSource getDataSourceInstance(String dataSourceName) {
@@ -134,7 +110,7 @@ public class SqlEntityProcessor extends EntityProcessor {
 			// 初始化dataSource实例
 			dataSrc.init(initProps);
 		} catch (Exception e) {
-			throw new DataImportException(SEVERE, "Failed to initialize DataSource: " + dataSourceName);
+			// Failed to initialize DataSource
 		}
 		return dataSrc;
 	}
@@ -175,12 +151,8 @@ public class SqlEntityProcessor extends EntityProcessor {
 				this.query = q;
 				rowIterator = jdbcDataSource.getData(query, markSize, fetchSize);
 			}
-		} catch (DataImportException e) {
-			throw new DataImportException(DataImportException.SEVERE, e); // throw
-																			// e;
 		} catch (Exception e) {
-			LOG.error("The query failed '" + q + "'", e);
-			throw new DataImportException(DataImportException.SEVERE, e);
+			e.printStackTrace();
 		}
 	}
 
@@ -194,14 +166,12 @@ public class SqlEntityProcessor extends EntityProcessor {
 	}
 
 	public String getQuery() {
-		String queryString = context.getEntityAttribute(QUERY);
+		String queryString = context.getEntityAttribute(DbConst.QUERY);
 		if (Context.FULL_DUMP.equals(context.currentProcess())) {
-			return queryString + " order by " + entity.getPk() + " asc";
+			return queryString + " order by " + table.getPk() + " asc";
 		}
 		return null;
 	}
-
-	public static final String QUERY = "query";
 
 	protected Map<String, Object> getNext() {
 		if (rowIterator == null)
@@ -221,52 +191,11 @@ public class SqlEntityProcessor extends EntityProcessor {
 			} catch (Exception e) {
 				query = null;
 				rowIterator = null;
-				wrapAndThrow(DataImportException.WARN, e);
 				return null;
 			}
 		} else {
 			return cacheSupport.getCacheData(context, query, rowIterator);
 		}
-	}
-
-	public DataSource getDataSource() {
-		return dataSource;
-	}
-
-	public void setDataSource(DataSource dataSource) {
-		this.dataSource = dataSource;
-	}
-
-	public String getDataSourceName() {
-		return dataSourceName;
-	}
-
-	public Entity getEntity() {
-		return entity;
-	}
-
-	public String getEntityName() {
-		return entityName;
-	}
-
-	public void setQuery(String query) {
-		this.query = query;
-	}
-
-	public int getFetchSize() {
-		return fetchSize;
-	}
-
-	public void setFetchSize(int fetchSize) {
-		this.fetchSize = fetchSize;
-	}
-
-	public int getMarkSize() {
-		return markSize;
-	}
-
-	public void setMarkSize(int markSize) {
-		this.markSize = markSize;
 	}
 
 	@Override
