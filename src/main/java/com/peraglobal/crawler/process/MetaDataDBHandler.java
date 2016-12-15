@@ -12,12 +12,12 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import com.peraglobal.common.IDGenerate;
 import com.peraglobal.crawler.process.MetaDataBuilder.FileDataField;
 import com.peraglobal.crawler.process.MetaDataBuilder.MetaDataWrapper;
 import com.peraglobal.crawler.util.Dom4jXmlUtil;
 import com.peraglobal.mongo.service.DatumService;
 import com.peraglobal.mongo.model.Datum;
-import com.peraglobal.crawler.util.IDGenerate;
 import com.peraglobal.db.model.Attachment;
 import com.peraglobal.db.service.AttachmentService;
 

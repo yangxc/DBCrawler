@@ -1,4 +1,4 @@
-package com.peraglobal.crawler.util;
+package com.peraglobal.common;
 
 import java.util.UUID;
 
