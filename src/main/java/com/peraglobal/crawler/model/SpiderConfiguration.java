@@ -60,7 +60,6 @@ public class SpiderConfiguration extends Configuration {
 		
 	}
 
-
 	public void readFromXml(Document xmlDocument) {
 		Map<String, Map<String, String>> dataSources = new HashMap<String, Map<String, String>>();
 
