@@ -2,7 +2,7 @@ package com.peraglobal.common;
 
 import org.springframework.context.ApplicationContext;
 
-public class ApplicationContextUtil {
+public class CurrentApplicationContext {
 	
 	private static ApplicationContext applicationContext;
 

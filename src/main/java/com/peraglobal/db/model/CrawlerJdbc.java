@@ -1,11 +1,12 @@
 package com.peraglobal.db.model;
 
 import java.io.Serializable;
-import java.util.Date;
+
+import com.peraglobal.spider.model.JdbcConnection;
 
 /**
- *  <code>Crawler.java</code>
- *  <p>功能：DBCrawler存储类
+ *  <code>CrawlerJdbc.java</code>
+ *  <p>功能：DB采集参数转换类
  *  
  *  <p>Copyright 安世亚太 2016 All right reserved.
  *  @author yongqian.liu	
@@ -13,9 +14,9 @@ import java.util.Date;
  *  @see 2016-12-16
  *  </br>最后修改人 无
  */
-public class Crawler implements Serializable {
+public class CrawlerJdbc implements Serializable {
 
-	private static final long serialVersionUID = 5216815372804434669L;
+	private static final long serialVersionUID = 2540369499127783004L;
 
 	/**
 	 * @category 采集 ID
@@ -38,24 +39,10 @@ public class Crawler implements Serializable {
 	private String groupName;
 	
 	/**
-	 * @category 表达式
+	 * @category jdbc对象
 	 */
-	private String express;
+	private JdbcConnection jdbc;
 	
-	/**
-	 * @category 状态
-	 */
-	private String state;
-	
-	/**
-	 * @category 创建时间
-	 */
-	private Date createTime;
-	
-	/**
-	 * @category 更新时间
-	 */
-	private Date updateTime;
 
 	public String getCrawlerId() {
 		return crawlerId;
@@ -89,35 +76,12 @@ public class Crawler implements Serializable {
 		this.groupName = groupName;
 	}
 
-	public String getExpress() {
-		return express;
+	public JdbcConnection getJdbc() {
+		return jdbc;
 	}
 
-	public void setExpress(String express) {
-		this.express = express;
+	public void setJdbc(JdbcConnection jdbc) {
+		this.jdbc = jdbc;
 	}
 
-	public String getState() {
-		return state;
-	}
-
-	public void setState(String state) {
-		this.state = state;
-	}
-
-	public Date getCreateTime() {
-		return createTime;
-	}
-
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
-
-	public Date getUpdateTime() {
-		return updateTime;
-	}
-
-	public void setUpdateTime(Date updateTime) {
-		this.updateTime = updateTime;
-	}
 }

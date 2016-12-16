@@ -1,4 +1,4 @@
-package com.peraglobal.crawler.process;
+package com.peraglobal.spider.process;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,7 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.peraglobal.crawler.model.DbConst;
+import com.peraglobal.spider.model.DbConst;
 
 /**
  * 爬虫线程管理

@@ -13,7 +13,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.peraglobal.db.model.Crawler;
+import com.peraglobal.db.model.CrawlerJdbc;
 import com.peraglobal.db.service.CrawlerService;
+import com.peraglobal.db.service.SpiderService;
+import com.peraglobal.spider.model.JdbcConnection;
+import com.peraglobal.spider.model.JdbcTable;
 
 
 /**
@@ -31,6 +35,9 @@ public class CrawlerController {
 	
 	@Autowired
 	private CrawlerService crawlerService;
+	
+	@Autowired
+	private SpiderService spiderService;
 	
 	
 	/**
@@ -75,9 +82,9 @@ public class CrawlerController {
 	 */
 	@SuppressWarnings("static-access")
 	@RequestMapping(value = "/createCrawler", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> createCrawler(@RequestBody Crawler crawler) {
+	public ResponseEntity<String> createCrawler(@RequestBody CrawlerJdbc jdbc) {
 		try {
-			String crawlerId = crawlerService.createCrawler(crawler);
+			String crawlerId = crawlerService.createCrawler(jdbc);
 			if(crawlerId != null) {
 				return new ResponseEntity<>(HttpStatus.CREATED).accepted().body(crawlerId);
 			}
@@ -107,9 +114,9 @@ public class CrawlerController {
 	 * @since 1.0
 	 */
 	@RequestMapping(value = "/editCrawler", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> editCrawler(@RequestBody Crawler crawler) {
+	public ResponseEntity<?> editCrawler(@RequestBody CrawlerJdbc jdbc) {
 		try {
-			crawlerService.editCrawler(crawler);
+			crawlerService.editCrawler(jdbc);
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {}
 		return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
@@ -142,6 +149,22 @@ public class CrawlerController {
 		try {
 			crawlerService.stop(crawler.getCrawlerId());
 			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {}
+		return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+	}
+	
+	/**
+	 * 获取表的集合
+	 * @see 2016-12-16	 
+	 * @param jdbc 数据库连接驱动
+	 * @return 状态码
+	 * @since 1.0
+	 */
+	@RequestMapping(value = "/getTables", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<JdbcTable>> getTables(@RequestBody JdbcConnection jdbc) {
+		try {
+			List<JdbcTable> tables = spiderService.getTables(jdbc);
+			return new ResponseEntity<>(HttpStatus.OK).accepted().body(tables);
 		} catch (Exception e) {}
 		return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
 	}

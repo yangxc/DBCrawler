@@ -11,9 +11,14 @@ import com.peraglobal.db.mapper.AttachmentMapper;
 import com.peraglobal.db.model.Attachment;
 
 /**
- * 2016-1-8
- * @author xiaodan.jing
- * 附件逻辑处理类
+ *  <code>Attachment.java</code>
+ *  <p>功能：附件逻辑处理类
+ *  
+ *  <p>Copyright 安世亚太 2016 All right reserved.
+ *  @author yongqian.liu	
+ *  @version 1.0
+ *  @see 2016-12-16
+ *  </br>最后修改人 无
  */
 @Service
 public class AttachmentService {

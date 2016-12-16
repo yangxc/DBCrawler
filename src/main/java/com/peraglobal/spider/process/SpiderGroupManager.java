@@ -1,4 +1,4 @@
-package com.peraglobal.crawler.process;
+package com.peraglobal.spider.process;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;

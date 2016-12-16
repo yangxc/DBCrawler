@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
-import com.peraglobal.common.ApplicationContextUtil;
+import com.peraglobal.common.CurrentApplicationContext;
 
 /**
  *  <code>Application.java</code>
@@ -21,7 +21,7 @@ public class Application {
 
 	public static void main(String[] args){
 		ApplicationContext applicationContext = SpringApplication.run(Application.class,args);
-		ApplicationContextUtil.setApplicationContext(applicationContext);
+		CurrentApplicationContext.setApplicationContext(applicationContext);
     }
 
 }

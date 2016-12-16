@@ -3,12 +3,15 @@ package com.peraglobal.db.service;
 import java.util.Date;
 import java.util.List;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.peraglobal.common.IDGenerate;
 import com.peraglobal.db.mapper.CrawlerMapper;
 import com.peraglobal.db.model.Crawler;
 import com.peraglobal.db.model.CrawlerConst;
+import com.peraglobal.db.model.CrawlerJdbc;
 
 /**
  *  <code>TaskService.java</code>
@@ -55,16 +58,21 @@ public class CrawlerService {
 	 * @return crawlerId 数据库采集 ID
 	 * @throws Exception
 	 */
-	public String createCrawler(Crawler crawler) throws Exception {
+	public String createCrawler(CrawlerJdbc jdbc) throws Exception {
+		Crawler crawler = new Crawler();
+		crawler.setCrawlerName(jdbc.getCrawlerName());
+		crawler.setGroupId(jdbc.getGroupId());
+		crawler.setGroupName(jdbc.getGroupName());
 		// 根据当前数据库采集名称和组 ID 查询是否存在，则不创建
 		Crawler c = crawlerMapper.getCrawlerByCrawlerName(crawler);
 		if(c == null) {
-			// uuid 任务 ID
-			crawler.setCrawlerId(java.util.UUID.randomUUID().toString());
+			crawler.setCrawlerId(IDGenerate.uuid());
 			// 默认状态为：就绪
 			crawler.setState(CrawlerConst.STATE_READY);
 			crawler.setCreateTime(new Date());
 			crawler.setUpdateTime(new Date());
+			JSONObject jsonObj = new JSONObject(jdbc.getJdbc());  
+			crawler.setExpress(jsonObj.toString());
 			crawlerMapper.createCrawler(crawler);
 			return crawler.getCrawlerId();
 		}
@@ -93,14 +101,16 @@ public class CrawlerService {
 	 * @param crawler 数据库采集对象
 	 * @throws Exception
 	 */
-	public void editCrawler(Crawler crawler) throws Exception {
+	public void editCrawler(CrawlerJdbc jdbc) throws Exception {
 		// 查询数据库采集对象是否存在
+		Crawler crawler = new Crawler();
+		crawler.setCrawlerName(jdbc.getCrawlerName());
+		crawler.setGroupId(jdbc.getGroupId());
+		crawler.setGroupName(jdbc.getGroupName());
 		Crawler c = crawlerMapper.getCrawler(crawler.getCrawlerId());
 		if(c != null) {
-			// 判断数据库采集对象是否在运行，如果状态为：非就绪，则存在任务调度器中
-			if(c.getState().equals(CrawlerConst.STATE_READY)) {
-				// 后续完善，停止任务
-			}
+			JSONObject jsonObj = new JSONObject(jdbc.getJdbc());  
+			crawler.setExpress(jsonObj.toString());
 			crawler.setUpdateTime(new Date());
 			crawlerMapper.editCrawler(crawler);
 		}

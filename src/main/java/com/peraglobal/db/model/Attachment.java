@@ -4,6 +4,16 @@ package com.peraglobal.db.model;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ *  <code>Attachment.java</code>
+ *  <p>功能：附件存储类
+ *  
+ *  <p>Copyright 安世亚太 2016 All right reserved.
+ *  @author yongqian.liu	
+ *  @version 1.0
+ *  @see 2016-12-16
+ *  </br>最后修改人 无
+ */
 public class Attachment implements Serializable {
 
 	private static final long serialVersionUID = -7563905349055068738L;

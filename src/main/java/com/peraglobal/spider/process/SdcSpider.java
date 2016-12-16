@@ -1,6 +1,6 @@
-package com.peraglobal.crawler.process;
+package com.peraglobal.spider.process;
 
-import com.peraglobal.crawler.model.DbConst;
+import com.peraglobal.spider.model.DbConst;
 
 /**
  * 爬虫任务基类
