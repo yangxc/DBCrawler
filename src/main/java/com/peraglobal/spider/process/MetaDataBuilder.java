@@ -9,7 +9,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.mysql.jdbc.DatabaseMetaData;
 import com.peraglobal.spider.model.JdbcConnection;
@@ -91,37 +93,6 @@ public class MetaDataBuilder {
 	}
 	
 	/**
-	 * 获得数据库所有视图
-	 * @param jdbc
-	 * @return
-	 */
-	public static List<JdbcTable> getViews(JdbcConnection jdbc) {
-		try {
-			Class.forName(jdbc.getDriver());
-			Connection con = (Connection) DriverManager.getConnection(jdbc.getUrl(),
-					jdbc.getUser(), jdbc.getPassword());
-			Statement statement = con.createStatement();
-			ResultSet result = statement.executeQuery("select view_name from user_views");
-			List<JdbcTable> tables = new ArrayList<JdbcTable>();
-			JdbcTable jdbcTable = null;
-			while (result.next()) {
-				jdbcTable = new JdbcTable();
-				jdbcTable.setName(result.getString("view_name"));
-				tables.add(jdbcTable);
-			}
-			result.close();
-			statement.close();
-			con.close();
-			return tables;
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	/**
 	 * 获得数据库表结构
 	 * @param jdbc
 	 * @return
@@ -154,6 +125,78 @@ public class MetaDataBuilder {
 		}
 		return null;
 	} 
+	
+	/**
+	 * 获得数据库表结构
+	 * @param jdbc
+	 * @return
+	*/
+	public static Map<String, Object> getRowDatas(JdbcConnection jdbc) {
+		try {
+			Class.forName(jdbc.getDriver());
+			Connection con = (Connection) DriverManager.getConnection(jdbc.getUrl(),
+					jdbc.getUser(), jdbc.getPassword());
+			Statement statement = con.createStatement();
+			
+			// 设置查询条件
+			JdbcTable table = jdbc.getTables();
+			ResultSet result = statement.executeQuery(table.getQuery() + "order by " + table.getPk());
+			
+			// 得到采集列集合
+			List<JdbcField> jdbcFields = table.getFields();
+			Map<String, Object> dataMap = new HashMap<String, Object>();
+			while (result.next()) {
+				for (JdbcField field : jdbcFields) {
+					if (null == field.getAs()) {
+						dataMap.put(field.getName(), result.getObject(field.getName()));
+					} else {
+						dataMap.put(field.getAs(), result.getObject(field.getName()));
+					}
+				}
+			}   
+			result.close();
+			statement.close();
+			con.close();
+			return dataMap;
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	} 
+	
+	
+	/**
+	 * 获得数据库所有视图
+	 * @param jdbc
+	 * @return
+	 */
+	public static List<JdbcTable> getViews(JdbcConnection jdbc) {
+		try {
+			Class.forName(jdbc.getDriver());
+			Connection con = (Connection) DriverManager.getConnection(jdbc.getUrl(),
+					jdbc.getUser(), jdbc.getPassword());
+			Statement statement = con.createStatement();
+			ResultSet result = statement.executeQuery("select view_name from user_views");
+			List<JdbcTable> tables = new ArrayList<JdbcTable>();
+			JdbcTable jdbcTable = null;
+			while (result.next()) {
+				jdbcTable = new JdbcTable();
+				jdbcTable.setName(result.getString("view_name"));
+				tables.add(jdbcTable);
+			}
+			result.close();
+			statement.close();
+			con.close();
+			return tables;
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	/**
 	 * 通过 JDBC 封装的类型 KEY 装换为类型值

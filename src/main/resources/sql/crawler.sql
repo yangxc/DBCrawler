@@ -1,5 +1,5 @@
 -- 数据库采集表
-DROP TABLE IF EXISTS `Crawler`;
+DROP TABLE IF EXISTS `crawler`;
 CREATE TABLE `Crawler` (
   `crawlerId` varchar(500) NOT NULL DEFAULT '' COMMENT 'ID',
   `crawlerName` varchar(500) NOT NULL DEFAULT '' COMMENT '名称',
@@ -14,7 +14,7 @@ CREATE TABLE `Crawler` (
 
 
 -- 附件库
-DROP TABLE IF EXISTS `Attachment`;
+DROP TABLE IF EXISTS `attachment`;
 CREATE TABLE `Attachment` (
   attachmentId  VARCHAR(50) NOT NULL COMMENT '主键',
   crawlerId     VARCHAR(50) NOT NULL COMMENT '爬虫 ID',
@@ -29,4 +29,17 @@ CREATE TABLE `Attachment` (
   updateTime	datetime NULL COMMENT '更新时间',
 PRIMARY KEY (`attachmentId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='附件表';
+
+
+-- 元数据
+DROP TABLE IF EXISTS `metadata`;
+CREATE TABLE `metadata` (
+  metadataId  VARCHAR(50) NOT NULL COMMENT '主键',  
+  crawlerId  VARCHAR(50) NULL COMMENT '爬虫 ID',
+  metadata     VARCHAR(50) NOT NULL COMMENT '爬虫数据',
+  md      VARCHAR(2000) NULL COMMENT 'md5码',
+  createTime	datetime NULL COMMENT '创建时间',
+  updateTime	datetime NULL COMMENT '更新时间',
+PRIMARY KEY (`metadataId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='元数据表';
 
