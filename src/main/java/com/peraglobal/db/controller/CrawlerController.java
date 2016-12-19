@@ -160,6 +160,7 @@ public class CrawlerController {
 	 * @return 状态码
 	 * @since 1.0
 	 */
+	@SuppressWarnings("static-access")
 	@RequestMapping(value = "/getTables", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<JdbcTable>> getTables(@RequestBody JdbcConnection jdbc) {
 		try {
