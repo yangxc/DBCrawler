@@ -17,7 +17,6 @@ public class DbSpider extends SdcSpider {
 	
     protected Crawler crawler;
     protected JdbcConnection jdbc;
-    protected int version;
     
     @Autowired
    	private HistoryService historyService;

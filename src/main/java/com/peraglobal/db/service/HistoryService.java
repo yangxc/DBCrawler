@@ -118,6 +118,10 @@ public class HistoryService {
 	 * @param message
 	 */
 	public void updateExcetion(String crawlerId, String message) {
+		// 异常信息保存字符长度控制在 1000 字以内
+		if (message != null && message.length() > 1000) {
+			message = message.substring(0, 1000);
+		}
 		int version = historyMapper.queryVersion(crawlerId);
 		History history = new History();
 		history.setCrawlerId(crawlerId);
