@@ -1,6 +1,6 @@
 -- 数据库采集表
 DROP TABLE IF EXISTS `crawler`;
-CREATE TABLE `Crawler` (
+CREATE TABLE `crawler` (
   `crawlerId` varchar(500) NOT NULL DEFAULT '' COMMENT 'ID',
   `crawlerName` varchar(500) NOT NULL DEFAULT '' COMMENT '名称',
   `groupId` varchar(500) NOT NULL DEFAULT '' COMMENT '组ID',
@@ -15,7 +15,7 @@ CREATE TABLE `Crawler` (
 
 -- 附件库
 DROP TABLE IF EXISTS `attachment`;
-CREATE TABLE `Attachment` (
+CREATE TABLE `attachment` (
   attachmentId  VARCHAR(50) NOT NULL COMMENT '主键',
   crawlerId     VARCHAR(50) NOT NULL COMMENT '爬虫 ID',
   datumId       VARCHAR(50) NOT NULL COMMENT '附件ID',
