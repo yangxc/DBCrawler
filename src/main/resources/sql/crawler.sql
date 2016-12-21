@@ -12,25 +12,6 @@ CREATE TABLE `crawler` (
   PRIMARY KEY (`crawlerId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='数据库存储表';
 
-
--- 附件库
-DROP TABLE IF EXISTS `attachment`;
-CREATE TABLE `attachment` (
-  attachmentId  VARCHAR(50) NOT NULL COMMENT '主键',
-  crawlerId     VARCHAR(50) NOT NULL COMMENT '爬虫 ID',
-  datumId       VARCHAR(50) NOT NULL COMMENT '附件ID',
-  name          VARCHAR(2000) NULL COMMENT '名称',
-  isfail        CHAR(10) NULL COMMENT '是否失败',
-  path          VARCHAR(2000) NULL COMMENT '路径',
-  type          VARCHAR(20) NULL COMMENT '类型',
-  txt           VARCHAR(100) NULL COMMENT 'txt',
-  filesize      VARCHAR(500) NULL COMMENT '文件大小',
-  createTime	datetime NULL COMMENT '创建时间',
-  updateTime	datetime NULL COMMENT '更新时间',
-PRIMARY KEY (`attachmentId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='附件表';
-
-
 -- 元数据
 DROP TABLE IF EXISTS `metadata`;
 CREATE TABLE `metadata` (
