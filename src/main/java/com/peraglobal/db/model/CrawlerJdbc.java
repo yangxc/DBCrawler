@@ -2,7 +2,7 @@ package com.peraglobal.db.model;
 
 import java.io.Serializable;
 
-import com.peraglobal.spider.model.JdbcConnection;
+import com.peraglobal.spider.model.DbConnection;
 
 /**
  *  <code>CrawlerJdbc.java</code>
@@ -41,7 +41,7 @@ public class CrawlerJdbc implements Serializable {
 	/**
 	 * @category jdbc对象
 	 */
-	private JdbcConnection jdbc;
+	private DbConnection dbConnection;
 	
 
 	public String getCrawlerId() {
@@ -76,12 +76,12 @@ public class CrawlerJdbc implements Serializable {
 		this.groupName = groupName;
 	}
 
-	public JdbcConnection getJdbc() {
-		return jdbc;
+	public DbConnection getDbConnection() {
+		return dbConnection;
 	}
 
-	public void setJdbc(JdbcConnection jdbc) {
-		this.jdbc = jdbc;
+	public void setDbConnection(DbConnection dbConnection) {
+		this.dbConnection = dbConnection;
 	}
 
 }

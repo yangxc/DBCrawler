@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.mysql.jdbc.DatabaseMetaData;
-import com.peraglobal.spider.model.JdbcConnection;
-import com.peraglobal.spider.model.JdbcField;
-import com.peraglobal.spider.model.JdbcTable;
+import com.peraglobal.spider.model.DbConnection;
+import com.peraglobal.spider.model.DbField;
+import com.peraglobal.spider.model.DbTable;
 
 /**
  * 2016-12-16
@@ -29,11 +29,11 @@ public class MetaDataBuilder {
 	 * 功能:验证数据库链接
 	 * <p>作者 yongqian.liu 2016-12-15
 	 */	
-	public static boolean isConn(JdbcConnection jdbc){
+	public static boolean isConn(DbConnection dbConnection){
 		try {
-			Class.forName(jdbc.getDriver());
-			Connection conn = (Connection) DriverManager.getConnection(jdbc.getUrl(),
-					jdbc.getUser(), jdbc.getPassword());
+			Class.forName(dbConnection.getDriver());
+			Connection conn = (Connection) DriverManager.getConnection(dbConnection.getUrl(),
+					dbConnection.getUser(), dbConnection.getPassword());
 			if (conn != null) {
 				return true;
 			}
@@ -49,12 +49,12 @@ public class MetaDataBuilder {
 	 * @param DBType 数据库类型
 	 * @return
 	 */
-	public static List<JdbcTable> getTables(JdbcConnection jdbc, String DBType) {
+	public static List<DbTable> getTables(DbConnection dbConnection, String DBType) {
 		try {
 			if(DBType == null) DBType = "mysql";
-			Class.forName(jdbc.getDriver());
-			Connection con = (Connection) DriverManager.getConnection(jdbc.getUrl(),
-					jdbc.getUser(), jdbc.getPassword());
+			Class.forName(dbConnection.getDriver());
+			Connection con = (Connection) DriverManager.getConnection(dbConnection.getUrl(),
+					dbConnection.getUser(), dbConnection.getPassword());
 			Statement statement = con.createStatement();
 			ResultSet result=null;
 			if ("oracle".equals(DBType)) {
@@ -65,17 +65,17 @@ public class MetaDataBuilder {
 			}else if("sqlserver".equals(DBType)){
 				result = statement.executeQuery("Select Name FROM SysObjects Where XType='U' ORDER BY Name ");
 			}
-			List<JdbcTable> tables = new ArrayList<JdbcTable>();
-			JdbcTable jdbcTable = null;
+			List<DbTable> tables = new ArrayList<DbTable>();
+			DbTable jdbcTable = null;
 			if("sqlserver".equals(DBType)){
 				while (result.next()) {
-					jdbcTable = new JdbcTable();
+					jdbcTable = new DbTable();
 					jdbcTable.setName(result.getString("name"));
 					tables.add(jdbcTable);
 				} 
 			}else {
 				while (result.next()) {
-					jdbcTable = new JdbcTable();
+					jdbcTable = new DbTable();
 					jdbcTable.setName(result.getString("table_name"));
 					tables.add(jdbcTable);
 				} 
@@ -97,19 +97,19 @@ public class MetaDataBuilder {
 	 * @param jdbc
 	 * @return
 	*/
-	public static List<JdbcField> getFields(JdbcConnection jdbc, JdbcTable table) {
+	public static List<DbField> getFields(DbConnection dbConnection, DbTable table) {
 		try {
-			Class.forName(jdbc.getDriver());
-			Connection con = (Connection) DriverManager.getConnection(jdbc.getUrl(),
-					jdbc.getUser(), jdbc.getPassword());
+			Class.forName(dbConnection.getDriver());
+			Connection con = (Connection) DriverManager.getConnection(dbConnection.getUrl(),
+					dbConnection.getUser(), dbConnection.getPassword());
 			Statement statement = con.createStatement();
 			ResultSet result = statement.executeQuery("select * from " + table.getName());
 			ResultSetMetaData metaData = result.getMetaData();
 			int count = metaData.getColumnCount();
-			List<JdbcField> jdbcFields = new ArrayList<JdbcField>();
-			JdbcField jdbcField = null;
+			List<DbField> jdbcFields = new ArrayList<DbField>();
+			DbField jdbcField = null;
 			for (int i = 0; i < count; i++) {
-				jdbcField = new JdbcField();
+				jdbcField = new DbField();
 				jdbcField.setName(metaData.getColumnLabel(i + 1));
 				jdbcField.setType(getType(metaData.getColumnType(i+1)));
 				jdbcFields.add(jdbcField);
@@ -131,22 +131,22 @@ public class MetaDataBuilder {
 	 * @param jdbc
 	 * @return
 	*/
-	public static Map<String, Object> getRowDatas(JdbcConnection jdbc) {
+	public static Map<String, Object> getRowDatas(DbConnection dbConnection) {
 		try {
-			Class.forName(jdbc.getDriver());
-			Connection con = (Connection) DriverManager.getConnection(jdbc.getUrl(),
-					jdbc.getUser(), jdbc.getPassword());
+			Class.forName(dbConnection.getDriver());
+			Connection con = (Connection) DriverManager.getConnection(dbConnection.getUrl(),
+					dbConnection.getUser(), dbConnection.getPassword());
 			Statement statement = con.createStatement();
 			
 			// 设置查询条件
-			JdbcTable table = jdbc.getTables();
+			DbTable table = dbConnection.getTables();
 			ResultSet result = statement.executeQuery(table.getQuery() + "order by " + table.getPk());
 			
 			// 得到采集列集合
-			List<JdbcField> jdbcFields = table.getFields();
+			List<DbField> jdbcFields = table.getFields();
 			Map<String, Object> dataMap = new HashMap<String, Object>();
 			while (result.next()) {
-				for (JdbcField field : jdbcFields) {
+				for (DbField field : jdbcFields) {
 					if (null == field.getAs()) {
 						dataMap.put(field.getName(), result.getObject(field.getName()));
 					} else {
@@ -172,17 +172,17 @@ public class MetaDataBuilder {
 	 * @param jdbc
 	 * @return
 	 */
-	public static List<JdbcTable> getViews(JdbcConnection jdbc) {
+	public static List<DbTable> getViews(DbConnection dbConnection) {
 		try {
-			Class.forName(jdbc.getDriver());
-			Connection con = (Connection) DriverManager.getConnection(jdbc.getUrl(),
-					jdbc.getUser(), jdbc.getPassword());
+			Class.forName(dbConnection.getDriver());
+			Connection con = (Connection) DriverManager.getConnection(dbConnection.getUrl(),
+					dbConnection.getUser(), dbConnection.getPassword());
 			Statement statement = con.createStatement();
 			ResultSet result = statement.executeQuery("select view_name from user_views");
-			List<JdbcTable> tables = new ArrayList<JdbcTable>();
-			JdbcTable jdbcTable = null;
+			List<DbTable> tables = new ArrayList<DbTable>();
+			DbTable jdbcTable = null;
 			while (result.next()) {
-				jdbcTable = new JdbcTable();
+				jdbcTable = new DbTable();
 				jdbcTable.setName(result.getString("view_name"));
 				tables.add(jdbcTable);
 			}

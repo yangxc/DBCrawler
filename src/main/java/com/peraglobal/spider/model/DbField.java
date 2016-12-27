@@ -1,6 +1,6 @@
 package com.peraglobal.spider.model;
 
-public class JdbcField {
+public class DbField {
 
 	
 	private String name;

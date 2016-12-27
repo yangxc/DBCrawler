@@ -16,8 +16,8 @@ import com.peraglobal.db.model.Crawler;
 import com.peraglobal.db.model.CrawlerJdbc;
 import com.peraglobal.db.service.CrawlerService;
 import com.peraglobal.db.service.SpiderService;
-import com.peraglobal.spider.model.JdbcConnection;
-import com.peraglobal.spider.model.JdbcTable;
+import com.peraglobal.spider.model.DbConnection;
+import com.peraglobal.spider.model.DbTable;
 
 
 /**
@@ -162,9 +162,9 @@ public class CrawlerController {
 	 */
 	@SuppressWarnings("static-access")
 	@RequestMapping(value = "/getTables", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<JdbcTable>> getTables(@RequestBody JdbcConnection jdbc) {
+	public ResponseEntity<List<DbTable>> getTables(@RequestBody DbConnection dbConnection) {
 		try {
-			List<JdbcTable> tables = spiderService.getTables(jdbc);
+			List<DbTable> tables = spiderService.getTables(dbConnection);
 			return new ResponseEntity<>(HttpStatus.OK).accepted().body(tables);
 		} catch (Exception e) {}
 		return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);

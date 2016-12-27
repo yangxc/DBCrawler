@@ -71,7 +71,7 @@ public class CrawlerService {
 			crawler.setState(CrawlerConst.STATE_READY);
 			crawler.setCreateTime(new Date());
 			crawler.setUpdateTime(new Date());
-			JSONObject jsonObj = new JSONObject(jdbc.getJdbc());  
+			JSONObject jsonObj = new JSONObject(jdbc.getDbConnection());  
 			crawler.setExpress(jsonObj.toString());
 			crawlerMapper.createCrawler(crawler);
 			return crawler.getCrawlerId();
@@ -109,7 +109,7 @@ public class CrawlerService {
 		crawler.setGroupName(jdbc.getGroupName());
 		Crawler c = crawlerMapper.getCrawler(crawler.getCrawlerId());
 		if(c != null) {
-			JSONObject jsonObj = new JSONObject(jdbc.getJdbc());  
+			JSONObject jsonObj = new JSONObject(jdbc.getDbConnection());  
 			crawler.setExpress(jsonObj.toString());
 			crawler.setUpdateTime(new Date());
 			crawlerMapper.editCrawler(crawler);

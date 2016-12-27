@@ -2,12 +2,12 @@ package com.peraglobal.spider.model;
 
 import java.util.List;
 
-public class JdbcTable {
+public class DbTable {
 
 	private String name;
 	private String query;
 	private String pk;
-	private List<JdbcField> fields;
+	private List<DbField> fields;
 	
 	public String getName() {
 		return name;
@@ -27,10 +27,10 @@ public class JdbcTable {
 	public void setPk(String pk) {
 		this.pk = pk;
 	}
-	public List<JdbcField> getFields() {
+	public List<DbField> getFields() {
 		return fields;
 	}
-	public void setFields(List<JdbcField> fields) {
+	public void setFields(List<DbField> fields) {
 		this.fields = fields;
 	}
 	

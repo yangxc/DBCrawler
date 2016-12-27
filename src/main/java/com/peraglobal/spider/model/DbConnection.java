@@ -1,6 +1,6 @@
 package com.peraglobal.spider.model;
 
-public class JdbcConnection {
+public class DbConnection {
 
 	private String name;
 	private String driver;
@@ -9,12 +9,12 @@ public class JdbcConnection {
 	private String password;
 	private String type;
 	
-	private JdbcTable tables;
+	private DbTable tables;
 	
-	public JdbcTable getTables() {
+	public DbTable getTables() {
 		return tables;
 	}
-	public void setTables(JdbcTable tables) {
+	public void setTables(DbTable tables) {
 		this.tables = tables;
 	}
 	public String getName() {

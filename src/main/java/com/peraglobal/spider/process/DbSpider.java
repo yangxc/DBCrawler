@@ -11,12 +11,12 @@ import com.peraglobal.db.model.Crawler;
 import com.peraglobal.db.model.Metadata;
 import com.peraglobal.db.service.HistoryService;
 import com.peraglobal.db.service.MetadataService;
-import com.peraglobal.spider.model.JdbcConnection;
+import com.peraglobal.spider.model.DbConnection;
 
 public class DbSpider extends SdcSpider {
 	
     protected Crawler crawler;
-    protected JdbcConnection jdbc;
+    protected DbConnection dbConnection;
     
     @Autowired
    	private HistoryService historyService;
@@ -46,10 +46,10 @@ public class DbSpider extends SdcSpider {
 		return this;
 	}
 	
-	public DbSpider setJdbcConnection() {
+	public DbSpider setDbConnection() {
 		if (this.crawler != null) {
 			JSONObject jsonObj = new JSONObject(crawler.getExpress());  
-			this.jdbc = (JdbcConnection)JSONObject.wrap(jsonObj);
+			this.dbConnection = (DbConnection)JSONObject.wrap(jsonObj);
 		}
 		return this;
 	}
@@ -73,7 +73,7 @@ public class DbSpider extends SdcSpider {
 				break;
 			}
 			try {
-				Map<String, Object> data = MetaDataBuilder.getRowDatas(this.jdbc);
+				Map<String, Object> data = MetaDataBuilder.getRowDatas(this.dbConnection);
 				if (data != null && data.size() > 0) {
 					for (int i = 0; i < data.size(); i++) {
 						

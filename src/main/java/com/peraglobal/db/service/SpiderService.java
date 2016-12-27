@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 
 import com.peraglobal.db.model.Crawler;
 import com.peraglobal.db.model.History;
-import com.peraglobal.spider.model.JdbcConnection;
-import com.peraglobal.spider.model.JdbcField;
-import com.peraglobal.spider.model.JdbcTable;
+import com.peraglobal.spider.model.DbConnection;
+import com.peraglobal.spider.model.DbField;
+import com.peraglobal.spider.model.DbTable;
 import com.peraglobal.spider.process.DbSpider;
 import com.peraglobal.spider.process.MetaDataBuilder;
 import com.peraglobal.spider.process.SpiderManager;
@@ -70,11 +70,11 @@ public class SpiderService {
 	 * @param jdbc
 	 * @return
 	 */
-	public List<JdbcTable> getTables(JdbcConnection jdbc) {
-		List<JdbcTable> jdbcTable = MetaDataBuilder.getTables(jdbc, null);
+	public List<DbTable> getTables(DbConnection dbConnection) {
+		List<DbTable> jdbcTable = MetaDataBuilder.getTables(dbConnection, null);
 		if(jdbcTable != null) {
-			for (JdbcTable table : jdbcTable) {
-				List<JdbcField> fields = MetaDataBuilder.getFields(jdbc, table);
+			for (DbTable table : jdbcTable) {
+				List<DbField> fields = MetaDataBuilder.getFields(dbConnection, table);
 				table.setFields(fields);
 			}
 			return jdbcTable;
