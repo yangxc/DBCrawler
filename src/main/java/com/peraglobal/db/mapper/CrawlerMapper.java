@@ -76,4 +76,5 @@ public interface CrawlerMapper {
     @Update("update crawler set state = #{state}, updateTime = #{updateTime} where crawlerId = #{crawlerId}")
 	public int updateStateByCrawler(Crawler crawler);
 
+    
 }
