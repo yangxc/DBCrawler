@@ -172,5 +172,4 @@ public class CrawlerController {
 		return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
 	}
 	
-	
 }
