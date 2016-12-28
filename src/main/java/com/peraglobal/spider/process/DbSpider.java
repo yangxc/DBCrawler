@@ -2,9 +2,10 @@ package com.peraglobal.spider.process;
 
 import java.util.Map;
 
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.peraglobal.common.CurrentApplicationContext;
 import com.peraglobal.common.IDGenerate;
 import com.peraglobal.db.model.Crawler;
@@ -48,8 +49,7 @@ public class DbSpider extends SdcSpider {
 	
 	public DbSpider setDbConnection() {
 		if (this.crawler != null) {
-			JSONObject jsonObj = new JSONObject(crawler.getExpress());  
-			this.dbConnection = (DbConnection)JSONObject.wrap(jsonObj);
+			this.dbConnection = JSON.parseObject(crawler.getExpress(), DbConnection.class);
 		}
 		return this;
 	}
@@ -78,8 +78,7 @@ public class DbSpider extends SdcSpider {
 					for (int i = 0; i < data.size(); i++) {
 						
 						// 采集到数据转换为 Json 格式
-						JSONObject jsonObj = new JSONObject(data.get(i));  
-						String jsonData = jsonObj.toString();
+						String jsonData = JSONObject.toJSONString(data.get(i));
 						
 						// 生成 MD5 码
 						String md5 = IDGenerate.EncoderByMd5(jsonData);

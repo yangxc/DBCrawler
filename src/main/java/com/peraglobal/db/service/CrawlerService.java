@@ -3,10 +3,10 @@ package com.peraglobal.db.service;
 import java.util.Date;
 import java.util.List;
 
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.peraglobal.common.IDGenerate;
 import com.peraglobal.db.mapper.CrawlerMapper;
 import com.peraglobal.db.model.Crawler;
@@ -75,8 +75,8 @@ public class CrawlerService {
 			crawler.setState(CrawlerConst.STATE_READY);
 			crawler.setCreateTime(new Date());
 			crawler.setUpdateTime(new Date());
-			JSONObject jsonObj = new JSONObject(dbCrawler.getDbConnection());  
-			crawler.setExpress(jsonObj.toString());
+			String str = JSONObject.toJSONString(dbCrawler.getDbConnection());
+			crawler.setExpress(str);
 			crawlerMapper.createCrawler(crawler);
 			return crawler.getCrawlerId();
 		}
@@ -113,8 +113,8 @@ public class CrawlerService {
 		crawler.setGroupName(dbCrawler.getGroupName());
 		Crawler c = crawlerMapper.getCrawler(crawler.getCrawlerId());
 		if(c != null) {
-			JSONObject jsonObj = new JSONObject(dbCrawler.getDbConnection());  
-			crawler.setExpress(jsonObj.toString());
+			String str = JSONObject.toJSONString(dbCrawler.getDbConnection());
+			crawler.setExpress(str);
 			crawler.setUpdateTime(new Date());
 			crawlerMapper.editCrawler(crawler);
 		}

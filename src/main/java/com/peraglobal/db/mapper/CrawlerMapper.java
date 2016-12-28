@@ -28,7 +28,7 @@ public interface CrawlerMapper {
 	 * @param groupId 组 ID
 	 * @return List<Crawler> 任务列表
 	 */
-	@Select("select * from Crawler where groupId = #{groupId}")
+	@Select("select * from crawler where groupId = #{groupId}")
     public List<Crawler> getCrawlerList(String groupId);
    
 	/**
@@ -36,7 +36,7 @@ public interface CrawlerMapper {
 	 * @param crawlerId 数据库采集 ID
 	 * @return Crawler 任务
 	 */
-    @Select("select * from Crawler where crawlerId = #{crawlerId}")
+    @Select("select * from crawler where crawlerId = #{crawlerId}")
     public Crawler getCrawler(String crawlerId);
    
 	/**
@@ -45,35 +45,35 @@ public interface CrawlerMapper {
 	 * @param groupId 组 ID
 	 * @return Crawler 数据库采集
 	 */
-    @Select("select * from Crawler where crawlerName = #{crawlerName} and groupId = #{groupId}")
+    @Select("select * from crawler where crawlerName = #{crawlerName} and groupId = #{groupId}")
     public Crawler getCrawlerByCrawlerName(Crawler crawler);
     
 	/**
 	 * 创建数据库采集
 	 * @param Crawler 数据库采集对象
 	 */
-    @Insert("insert into Crawler (crawlerId, crawlerName, groupId, groupName, express, state, createTime, updateTime) values (#{crawlerId}, #{crawlerName}, #{groupId}, #{groupName}, #{express,javaType=string,jdbcType=BLOB}, #{state}, #{createTime}, #{updateTime})")  
+    @Insert("insert into crawler (crawlerId, crawlerName, groupId, groupName, express, state, createTime, updateTime) values (#{crawlerId}, #{crawlerName}, #{groupId}, #{groupName}, #{express,javaType=string,jdbcType=BLOB}, #{state}, #{createTime}, #{updateTime})")  
     public void createCrawler(Crawler crawler);
 
     /**
 	 * 移除数据库采集
 	 * @param crawlerId 任务 ID
 	 */
-    @Delete("delete from Crawler where crawlerId = #{crawlerId}")
+    @Delete("delete from crawler where crawlerId = #{crawlerId}")
 	public void removeCrawler(String crawlerId);
 
 	/**
 	 * 编辑数据库采集
 	 * @param Crawler 数据库采集对象
 	 */
-    @Update("update Crawler set crawlerName = #{crawlerName}, groupName = #{groupName}, express = #{express}, updateTime = #{updateTime} where crawlerId = #{crawlerId}")
+    @Update("update crawler set crawlerName = #{crawlerName}, groupName = #{groupName}, express = #{express}, updateTime = #{updateTime} where crawlerId = #{crawlerId}")
 	public void editCrawler(Crawler crawler);
 
 	/**
 	 * 根据数据库采集 ID 修改状态
 	 * @param Crawler 数据库采集对象
 	 */
-    @Update("update Crawler set state = #{state}, updateTime = #{updateTime} where crawlerId = #{crawlerId}")
+    @Update("update crawler set state = #{state}, updateTime = #{updateTime} where crawlerId = #{crawlerId}")
 	public int updateStateByCrawler(Crawler crawler);
 
 }
