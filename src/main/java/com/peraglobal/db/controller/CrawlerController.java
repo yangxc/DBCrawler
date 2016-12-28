@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.peraglobal.db.model.Crawler;
-import com.peraglobal.db.model.CrawlerJdbc;
 import com.peraglobal.db.service.CrawlerService;
 import com.peraglobal.db.service.SpiderService;
 import com.peraglobal.spider.model.DbConnection;
+import com.peraglobal.spider.model.DbCrawler;
 import com.peraglobal.spider.model.DbTable;
 
 
@@ -82,13 +82,15 @@ public class CrawlerController {
 	 */
 	@SuppressWarnings("static-access")
 	@RequestMapping(value = "/createCrawler", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> createCrawler(@RequestBody CrawlerJdbc jdbc) {
+	public ResponseEntity<String> createCrawler(@RequestBody DbCrawler dbCrawler) {
 		try {
-			String crawlerId = crawlerService.createCrawler(jdbc);
+			String crawlerId = crawlerService.createCrawler(dbCrawler);
 			if(crawlerId != null) {
 				return new ResponseEntity<>(HttpStatus.CREATED).accepted().body(crawlerId);
 			}
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
 	}
 	
@@ -114,9 +116,9 @@ public class CrawlerController {
 	 * @since 1.0
 	 */
 	@RequestMapping(value = "/editCrawler", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> editCrawler(@RequestBody CrawlerJdbc jdbc) {
+	public ResponseEntity<?> editCrawler(@RequestBody DbCrawler dbCrawler) {
 		try {
-			crawlerService.editCrawler(jdbc);
+			crawlerService.editCrawler(dbCrawler);
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {}
 		return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);

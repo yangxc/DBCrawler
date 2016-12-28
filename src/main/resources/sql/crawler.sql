@@ -2,10 +2,10 @@
 DROP TABLE IF EXISTS `crawler`;
 CREATE TABLE `crawler` (
   `crawlerId` varchar(50) NOT NULL DEFAULT '' COMMENT 'ID',
-  `crawlerName` varchar(500) NOT NULL DEFAULT '' COMMENT '名称',
-  `groupId` varchar(500) NOT NULL DEFAULT '' COMMENT '组ID',
-  `groupName` varchar(500) NOT NULL DEFAULT '' COMMENT '组名称', 
-  `express` varchar(500) NULL DEFAULT '' COMMENT '表达式',
+  `crawlerName` varchar(500) NULL DEFAULT '' COMMENT '名称',
+  `groupId` varchar(500) NULL DEFAULT '' COMMENT '组ID',
+  `groupName` varchar(500) NULL DEFAULT '' COMMENT '组名称', 
+  `express` blob,
   `state` varchar(500) NULL DEFAULT '' COMMENT '状态',  
   `createTime` datetime NULL COMMENT '创建时间',
   `updateTime` datetime NULL COMMENT '更新时间',
@@ -17,7 +17,7 @@ DROP TABLE IF EXISTS `metadata`;
 CREATE TABLE `metadata` (
   metadataId  VARCHAR(50) NOT NULL COMMENT '主键',  
   crawlerId  VARCHAR(50) NULL COMMENT '爬虫 ID',
-  metadata     VARCHAR(50) NOT NULL COMMENT '爬虫数据',
+  metadata     VARCHAR(50) NULL COMMENT '爬虫数据',
   md      VARCHAR(2000) NULL COMMENT 'md5码',
   createTime	datetime NULL COMMENT '创建时间',
   updateTime	datetime NULL COMMENT '更新时间',

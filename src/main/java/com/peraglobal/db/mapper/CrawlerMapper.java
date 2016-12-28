@@ -52,7 +52,7 @@ public interface CrawlerMapper {
 	 * 创建数据库采集
 	 * @param Crawler 数据库采集对象
 	 */
-    @Insert("insert into Crawler (crawlerId, crawlerName, groupId, groupName, express, state, createTime, updateTime) values (#{crawlerId}, #{crawlerName}, #{groupId}, #{groupName}, #{express}, #{state}, #{createTime}, #{updateTime})")  
+    @Insert("insert into Crawler (crawlerId, crawlerName, groupId, groupName, express, state, createTime, updateTime) values (#{crawlerId}, #{crawlerName}, #{groupId}, #{groupName}, #{express,javaType=string,jdbcType=BLOB}, #{state}, #{createTime}, #{updateTime})")  
     public void createCrawler(Crawler crawler);
 
     /**

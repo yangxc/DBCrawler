@@ -11,7 +11,7 @@ import com.peraglobal.common.IDGenerate;
 import com.peraglobal.db.mapper.CrawlerMapper;
 import com.peraglobal.db.model.Crawler;
 import com.peraglobal.db.model.CrawlerConst;
-import com.peraglobal.db.model.CrawlerJdbc;
+import com.peraglobal.spider.model.DbCrawler;
 
 /**
  *  <code>TaskService.java</code>
@@ -58,11 +58,11 @@ public class CrawlerService {
 	 * @return crawlerId 数据库采集 ID
 	 * @throws Exception
 	 */
-	public String createCrawler(CrawlerJdbc jdbc) throws Exception {
+	public String createCrawler(DbCrawler dbCrawler) throws Exception {
 		Crawler crawler = new Crawler();
-		crawler.setCrawlerName(jdbc.getCrawlerName());
-		crawler.setGroupId(jdbc.getGroupId());
-		crawler.setGroupName(jdbc.getGroupName());
+		crawler.setCrawlerName(dbCrawler.getCrawlerName());
+		crawler.setGroupId(dbCrawler.getGroupId());
+		crawler.setGroupName(dbCrawler.getGroupName());
 		// 根据当前数据库采集名称和组 ID 查询是否存在，则不创建
 		Crawler c = crawlerMapper.getCrawlerByCrawlerName(crawler);
 		if(c == null) {
@@ -71,7 +71,7 @@ public class CrawlerService {
 			crawler.setState(CrawlerConst.STATE_READY);
 			crawler.setCreateTime(new Date());
 			crawler.setUpdateTime(new Date());
-			JSONObject jsonObj = new JSONObject(jdbc.getDbConnection());  
+			JSONObject jsonObj = new JSONObject(dbCrawler.getDbConnection());  
 			crawler.setExpress(jsonObj.toString());
 			crawlerMapper.createCrawler(crawler);
 			return crawler.getCrawlerId();
@@ -101,15 +101,15 @@ public class CrawlerService {
 	 * @param crawler 数据库采集对象
 	 * @throws Exception
 	 */
-	public void editCrawler(CrawlerJdbc jdbc) throws Exception {
+	public void editCrawler(DbCrawler dbCrawler) throws Exception {
 		// 查询数据库采集对象是否存在
 		Crawler crawler = new Crawler();
-		crawler.setCrawlerName(jdbc.getCrawlerName());
-		crawler.setGroupId(jdbc.getGroupId());
-		crawler.setGroupName(jdbc.getGroupName());
+		crawler.setCrawlerName(dbCrawler.getCrawlerName());
+		crawler.setGroupId(dbCrawler.getGroupId());
+		crawler.setGroupName(dbCrawler.getGroupName());
 		Crawler c = crawlerMapper.getCrawler(crawler.getCrawlerId());
 		if(c != null) {
-			JSONObject jsonObj = new JSONObject(jdbc.getDbConnection());  
+			JSONObject jsonObj = new JSONObject(dbCrawler.getDbConnection());  
 			crawler.setExpress(jsonObj.toString());
 			crawler.setUpdateTime(new Date());
 			crawlerMapper.editCrawler(crawler);
