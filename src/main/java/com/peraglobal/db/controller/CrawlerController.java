@@ -131,9 +131,9 @@ public class CrawlerController {
 	 * @since 1.0
 	 */
 	@RequestMapping(value = "/start", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> start(@RequestBody Crawler crawler) {
+	public ResponseEntity<?> start(@RequestBody String crawlerId) {
 		try {
-			crawlerService.start(crawler.getCrawlerId());
+			crawlerService.start(crawlerId);
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {}
 		return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
@@ -147,9 +147,9 @@ public class CrawlerController {
 	 * @since 1.0
 	 */
 	@RequestMapping(value = "/stop", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> stop(@RequestBody Crawler crawler) {
+	public ResponseEntity<?> stop(@RequestBody String crawlerId) {
 		try {
-			crawlerService.stop(crawler.getCrawlerId());
+			crawlerService.stop(crawlerId);
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {}
 		return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);

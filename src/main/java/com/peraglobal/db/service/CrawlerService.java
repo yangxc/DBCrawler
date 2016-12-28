@@ -66,7 +66,11 @@ public class CrawlerService {
 		// 根据当前数据库采集名称和组 ID 查询是否存在，则不创建
 		Crawler c = crawlerMapper.getCrawlerByCrawlerName(crawler);
 		if(c == null) {
-			crawler.setCrawlerId(IDGenerate.uuid());
+			if (null == dbCrawler.getCrawlerId()) {
+				crawler.setCrawlerId(IDGenerate.uuid());
+			} else {
+				crawler.setCrawlerId(dbCrawler.getCrawlerId());
+			}
 			// 默认状态为：就绪
 			crawler.setState(CrawlerConst.STATE_READY);
 			crawler.setCreateTime(new Date());
