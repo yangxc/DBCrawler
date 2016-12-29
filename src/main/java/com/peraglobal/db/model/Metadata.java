@@ -30,7 +30,7 @@ public class Metadata implements Serializable {
 	/**
 	 * @category 元数据 json 格式
 	 */
-	private String metadta;
+	private String metadata;
 	
 	/**
 	 * @category md5 码
@@ -63,13 +63,14 @@ public class Metadata implements Serializable {
 		this.crawlerId = crawlerId;
 	}
 
-	public String getMetadta() {
-		return metadta;
+	public String getMetadata() {
+		return metadata;
 	}
 
-	public void setMetadta(String metadta) {
-		this.metadta = metadta;
+	public void setMetadata(String metadata) {
+		this.metadata = metadata;
 	}
+
 
 	public String getMd() {
 		return md;

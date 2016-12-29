@@ -130,7 +130,7 @@ public class CrawlerController {
 	 * @return 状态码
 	 * @since 1.0
 	 */
-	@RequestMapping(value = "/start", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/start", method = RequestMethod.PUT)
 	public ResponseEntity<?> start(@RequestBody String crawlerId) {
 		try {
 			crawlerService.start(crawlerId);
@@ -146,7 +146,7 @@ public class CrawlerController {
 	 * @return 状态码
 	 * @since 1.0
 	 */
-	@RequestMapping(value = "/stop", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/stop", method = RequestMethod.PUT)
 	public ResponseEntity<?> stop(@RequestBody String crawlerId) {
 		try {
 			crawlerService.stop(crawlerId);

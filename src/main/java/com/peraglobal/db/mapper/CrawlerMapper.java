@@ -66,7 +66,7 @@ public interface CrawlerMapper {
 	 * 编辑数据库采集
 	 * @param Crawler 数据库采集对象
 	 */
-    @Update("update crawler set crawlerName = #{crawlerName}, groupName = #{groupName}, express = #{express}, updateTime = #{updateTime} where crawlerId = #{crawlerId}")
+    @Update("update crawler set crawlerName = #{crawlerName}, groupName = #{groupName}, express = #{express,javaType=string,jdbcType=BLOB}, updateTime = #{updateTime} where crawlerId = #{crawlerId}")
 	public void editCrawler(Crawler crawler);
 
 	/**

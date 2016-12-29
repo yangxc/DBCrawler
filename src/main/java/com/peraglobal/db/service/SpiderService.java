@@ -39,7 +39,7 @@ public class SpiderService {
 	public void start(Crawler crawler) throws Exception {
 		
 		// 创建数据库导入对象
-		DbSpider.create().setCrawler(crawler).register();
+		DbSpider.create().setCrawler(crawler).setDbConnection().register();
 		// 开始爬虫操作
 		SpiderManager.start(crawler.getCrawlerId());
 		

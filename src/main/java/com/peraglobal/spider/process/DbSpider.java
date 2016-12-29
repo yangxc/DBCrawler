@@ -1,5 +1,7 @@
 package com.peraglobal.spider.process;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,10 +75,9 @@ public class DbSpider extends SdcSpider {
 				break;
 			}
 			try {
-				Map<String, Object> data = MetaDataBuilder.getRowDatas(this.dbConnection);
+				List data = MetaDataBuilder.getRowDatas(this.dbConnection);
 				if (data != null && data.size() > 0) {
 					for (int i = 0; i < data.size(); i++) {
-						
 						// 采集到数据转换为 Json 格式
 						String jsonData = JSONObject.toJSONString(data.get(i));
 						
@@ -91,7 +92,7 @@ public class DbSpider extends SdcSpider {
 							metadata = new Metadata();
 							metadata.setCrawlerId(crawler.getCrawlerId());
 							metadata.setMd(md5);
-							metadata.setMetadta(jsonData);
+							metadata.setMetadata(jsonData);
 							metadataService.createMetadata(metadata);
 							
 							// 监控日志，后续完善

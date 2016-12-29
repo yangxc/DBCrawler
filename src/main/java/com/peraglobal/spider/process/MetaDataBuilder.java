@@ -131,7 +131,7 @@ public class MetaDataBuilder {
 	 * @param jdbc
 	 * @return
 	*/
-	public static Map<String, Object> getRowDatas(DbConnection dbConnection) {
+	public static List getRowDatas(DbConnection dbConnection) {
 		try {
 			Class.forName(dbConnection.getDriver());
 			Connection con = (Connection) DriverManager.getConnection(dbConnection.getUrl(),
@@ -140,12 +140,14 @@ public class MetaDataBuilder {
 			
 			// 设置查询条件
 			DbTable table = dbConnection.getTables();
-			ResultSet result = statement.executeQuery(table.getQuery() + "order by " + table.getPk());
+			ResultSet result = statement.executeQuery(table.getQuery());
 			
 			// 得到采集列集合
 			List<DbField> jdbcFields = table.getFields();
-			Map<String, Object> dataMap = new HashMap<String, Object>();
+			List obj = new ArrayList();
+			
 			while (result.next()) {
+				Map<String, Object> dataMap = new HashMap<String, Object>();
 				for (DbField field : jdbcFields) {
 					if (null == field.getAs()) {
 						dataMap.put(field.getName(), result.getObject(field.getName()));
@@ -153,11 +155,12 @@ public class MetaDataBuilder {
 						dataMap.put(field.getAs(), result.getObject(field.getName()));
 					}
 				}
+				obj.add(dataMap);
 			}   
 			result.close();
 			statement.close();
 			con.close();
-			return dataMap;
+			return obj;
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
