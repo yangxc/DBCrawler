@@ -1,12 +1,9 @@
 package com.peraglobal.spider.process;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.peraglobal.common.CurrentApplicationContext;
 import com.peraglobal.common.IDGenerate;
@@ -49,9 +46,9 @@ public class DbSpider extends SdcSpider {
 		return this;
 	}
 	
-	public DbSpider setDbConnection() {
+	public DbSpider setDbConnection(DbConnection dbConnection) {
 		if (this.crawler != null) {
-			this.dbConnection = JSON.parseObject(crawler.getExpress(), DbConnection.class);
+			this.dbConnection = dbConnection;
 		}
 		return this;
 	}

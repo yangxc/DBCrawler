@@ -5,12 +5,20 @@ CREATE TABLE `crawler` (
   `crawlerName` varchar(500) NULL DEFAULT '' COMMENT '名称',
   `groupId` varchar(500) NULL DEFAULT '' COMMENT '组ID',
   `groupName` varchar(500) NULL DEFAULT '' COMMENT '组名称', 
-  `express` blob,
   `state` varchar(500) NULL DEFAULT '' COMMENT '状态',  
   `createTime` datetime NULL COMMENT '创建时间',
   `updateTime` datetime NULL COMMENT '更新时间',
   PRIMARY KEY (`crawlerId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='数据库存储表';
+
+-- 规则表
+DROP TABLE IF EXISTS `rule`;
+CREATE TABLE `rule` (
+  `ruleId` varchar(50) NOT NULL DEFAULT '' COMMENT 'ID',
+  `crawlerId` varchar(50) NULL DEFAULT '' COMMENT '爬虫 ID', 
+  `express` blob,
+  PRIMARY KEY (`ruleId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='规则表';
 
 -- 元数据
 DROP TABLE IF EXISTS `metadata`;

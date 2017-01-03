@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
 import com.peraglobal.common.IDGenerate;
 import com.peraglobal.db.mapper.CrawlerMapper;
+import com.peraglobal.db.mapper.RuleMapper;
 import com.peraglobal.db.model.Crawler;
 import com.peraglobal.db.model.CrawlerConst;
+import com.peraglobal.db.model.Rule;
 import com.peraglobal.spider.model.DbCrawler;
 
 /**
@@ -31,6 +33,9 @@ public class CrawlerService {
 	
 	@Autowired
     private SpiderService spiderService;
+	
+	@Autowired
+    private RuleMapper ruleMapper;
 	
 	/**
 	 * 根据组 ID 查询数据库采集列表
@@ -75,9 +80,15 @@ public class CrawlerService {
 			crawler.setState(CrawlerConst.STATE_READY);
 			crawler.setCreateTime(new Date());
 			crawler.setUpdateTime(new Date());
-			String str = JSONObject.toJSONString(dbCrawler.getDbConnection());
-			crawler.setExpress(str);
 			crawlerMapper.createCrawler(crawler);
+			
+			// 创建规则文件
+			String str = JSONObject.toJSONString(dbCrawler.getDbConnection());
+			Rule rule = new Rule();
+			rule.setRuleId(IDGenerate.uuid());
+			rule.setCrawlerId(crawler.getCrawlerId());
+			rule.setExpress(str);
+			ruleMapper.createRule(rule);
 			return crawler.getCrawlerId();
 		}
 		return null;
@@ -108,15 +119,21 @@ public class CrawlerService {
 	public void editCrawler(DbCrawler dbCrawler) throws Exception {
 		// 查询数据库采集对象是否存在
 		Crawler crawler = new Crawler();
+		crawler.setCrawlerId(dbCrawler.getCrawlerId());
 		crawler.setCrawlerName(dbCrawler.getCrawlerName());
 		crawler.setGroupId(dbCrawler.getGroupId());
 		crawler.setGroupName(dbCrawler.getGroupName());
 		Crawler c = crawlerMapper.getCrawler(crawler.getCrawlerId());
 		if(c != null) {
-			String str = JSONObject.toJSONString(dbCrawler.getDbConnection());
-			crawler.setExpress(str);
 			crawler.setUpdateTime(new Date());
 			crawlerMapper.editCrawler(crawler);
+			
+			// 修改规则
+			String str = JSONObject.toJSONString(dbCrawler.getDbConnection());
+			Rule rule = new Rule();
+			rule.setCrawlerId(crawler.getCrawlerId());
+			rule.setExpress(str);
+			ruleMapper.editRule(rule);
 		}
 	}
 
@@ -160,5 +177,9 @@ public class CrawlerService {
 			// 执行爬虫采集停止功能
 			spiderService.stop(crawler);
 		}
+	}
+
+	public Rule getRule(String crawlerId) {
+		return ruleMapper.getRule(crawlerId);
 	}
 }

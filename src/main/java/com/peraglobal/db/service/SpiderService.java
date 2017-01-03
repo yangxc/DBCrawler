@@ -5,8 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
 import com.peraglobal.db.model.Crawler;
 import com.peraglobal.db.model.History;
+import com.peraglobal.db.model.Rule;
 import com.peraglobal.spider.model.DbConnection;
 import com.peraglobal.spider.model.DbField;
 import com.peraglobal.spider.model.DbTable;
@@ -28,6 +30,9 @@ import com.peraglobal.spider.process.SpiderManager;
 public class SpiderService {
 
 	@Autowired
+   	private CrawlerService crawlerService;
+	
+	@Autowired
    	private HistoryService historyService;
 	
 	
@@ -38,8 +43,11 @@ public class SpiderService {
 	 */
 	public void start(Crawler crawler) throws Exception {
 		
+		// 查询规则文件
+		Rule rule = crawlerService.getRule(crawler.getCrawlerId());
+		DbConnection dbConnection = JSON.parseObject(rule.getExpress(), DbConnection.class);
 		// 创建数据库导入对象
-		DbSpider.create().setCrawler(crawler).setDbConnection().register();
+		DbSpider.create().setCrawler(crawler).setDbConnection(dbConnection).register();
 		// 开始爬虫操作
 		SpiderManager.start(crawler.getCrawlerId());
 		

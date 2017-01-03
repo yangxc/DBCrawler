@@ -38,11 +38,6 @@ public class Crawler implements Serializable {
 	private String groupName;
 	
 	/**
-	 * @category 表达式
-	 */
-	private String express;
-	
-	/**
 	 * @category 状态
 	 */
 	private String state;
@@ -87,14 +82,6 @@ public class Crawler implements Serializable {
 
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
-	}
-
-	public String getExpress() {
-		return express;
-	}
-
-	public void setExpress(String express) {
-		this.express = express;
 	}
 
 	public String getState() {
