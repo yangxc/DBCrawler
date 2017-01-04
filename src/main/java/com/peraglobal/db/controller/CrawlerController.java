@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.peraglobal.db.model.Crawler;
+import com.peraglobal.db.model.History;
 import com.peraglobal.db.service.CrawlerService;
+import com.peraglobal.db.service.HistoryService;
 import com.peraglobal.db.service.SpiderService;
 import com.peraglobal.spider.model.DbConnection;
 import com.peraglobal.spider.model.DbCrawler;
@@ -38,6 +40,9 @@ public class CrawlerController {
 	
 	@Autowired
 	private SpiderService spiderService;
+	
+	@Autowired
+	private HistoryService historyService;
 	
 	
 	/**
@@ -172,5 +177,21 @@ public class CrawlerController {
 		return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
 	}
 	
+	/**
+	 * 获得数据库采集列表
+	 * @param groupId 组Id （多用户区分不同用户）
+	 * @return List<Crawler> 数据库采集列表
+	 * @since 1.0
+	 */
+	@SuppressWarnings("static-access")
+	@RequestMapping(value = "/getHistoryByTaskId/{crawlerId}", method = RequestMethod.GET)
+	public ResponseEntity<List<History>> getHistoryByTaskId(@PathVariable("crawlerId") String crawlerId) {
+		try {
+			List<History> historys = historyService.getHistorysByCrawlerId(crawlerId);
+			return new ResponseEntity<>(HttpStatus.OK).accepted().body(historys);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+		}
+	}
 	
 }

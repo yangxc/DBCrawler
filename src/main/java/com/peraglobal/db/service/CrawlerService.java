@@ -36,6 +36,7 @@ public class CrawlerService {
 	
 	@Autowired
     private RuleMapper ruleMapper;
+
 	
 	/**
 	 * 根据组 ID 查询数据库采集列表
@@ -182,4 +183,5 @@ public class CrawlerService {
 	public Rule getRule(String crawlerId) {
 		return ruleMapper.getRule(crawlerId);
 	}
+	
 }
