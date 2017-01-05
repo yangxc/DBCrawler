@@ -147,5 +147,16 @@ public class HistoryService {
 		history.setUpdateTime(new Date());
 		historyMapper.updateExcetion(history);
 	}
+
+	public int getCountByCrawlerId(String crawlerId) {
+		List<History> historys = historyMapper.getHistorysByCrawlerId(crawlerId);
+		int count = 0;
+		if (historys != null) {
+			for (History history : historys) {
+				count += history.getPageCrawledCount();
+			}
+		}
+		return count;
+	}
 	
 }

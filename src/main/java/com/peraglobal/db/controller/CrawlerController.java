@@ -20,6 +20,8 @@ import com.peraglobal.db.service.SpiderService;
 import com.peraglobal.spider.model.DbConnection;
 import com.peraglobal.spider.model.DbCrawler;
 import com.peraglobal.spider.model.DbTable;
+import com.peraglobal.db.model.Metadata;
+import com.peraglobal.db.service.MetadataService;
 
 
 /**
@@ -44,6 +46,8 @@ public class CrawlerController {
 	@Autowired
 	private HistoryService historyService;
 	
+	@Autowired
+	private MetadataService metadataService;
 	
 	/**
 	 * 获得数据库采集列表
@@ -178,9 +182,9 @@ public class CrawlerController {
 	}
 	
 	/**
-	 * 获得数据库采集列表
-	 * @param groupId 组Id （多用户区分不同用户）
-	 * @return List<Crawler> 数据库采集列表
+	 * 根据爬虫 ID 获得数据库采集历史记录
+	 * @param crawlerId 爬虫 ID
+	 * @return List<History> 历史记录
 	 * @since 1.0
 	 */
 	@SuppressWarnings("static-access")
@@ -194,4 +198,37 @@ public class CrawlerController {
 		}
 	}
 	
+	/**
+	 * 根据爬虫ID 获得任务采集数量
+	 * @param crawlerId 爬虫 ID
+	 * @return Integer 采集数量
+	 * @since 1.0
+	 */
+	@SuppressWarnings("static-access")
+	@RequestMapping(value = "/getCountByCrawlerId/{crawlerId}", method = RequestMethod.GET)
+	public ResponseEntity<Integer> getCountByCrawlerId(@PathVariable("crawlerId") String crawlerId) {
+		try {
+			int count = historyService.getCountByCrawlerId(crawlerId);
+			return new ResponseEntity<>(HttpStatus.OK).accepted().body(count);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+		}
+	}
+	
+	/**
+	 * 根据爬虫ID 获得元数据
+	 * @param crawlerId 爬虫 ID
+	 * @return List<Metadata> 元数据
+	 * @since 1.0
+	 */
+	@SuppressWarnings("static-access")
+	@RequestMapping(value = "/getMetadataByCrawlerId/{crawlerId}", method = RequestMethod.GET)
+	public ResponseEntity<List<Metadata>> getMetadataByCrawlerId(@PathVariable("crawlerId") String crawlerId) {
+		try {
+			List<Metadata> metadatas = metadataService.getMetadatasByCrawlerId(crawlerId);
+			return new ResponseEntity<>(HttpStatus.OK).accepted().body(metadatas);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+		}
+	}
 }
