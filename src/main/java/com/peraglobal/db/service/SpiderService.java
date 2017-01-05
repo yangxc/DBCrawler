@@ -72,22 +72,23 @@ public class SpiderService {
 		historyService.stopHistory(crawler.getCrawlerId());
 		
 	}
-
+	
 	/**
 	 * 获得所有表
-	 * @param jdbc
+	 * @param dbConnection
 	 * @return
 	 */
-	public List<DbTable> getTables(DbConnection dbConnection) {
-		List<DbTable> jdbcTable = MetaDataBuilder.getTables(dbConnection, null);
-		if(jdbcTable != null) {
-			for (DbTable table : jdbcTable) {
-				List<DbField> fields = MetaDataBuilder.getFields(dbConnection, table);
-				table.setFields(fields);
-			}
-			return jdbcTable;
-		}
-		return null;
+	public List getTables(DbConnection dbConnection) {
+		return MetaDataBuilder.getTables(dbConnection);
+	}
+
+	/**
+	 * 获得所有列
+	 * @param dbConnection
+	 * @return
+	 */
+	public List getFields(DbConnection dbConnection) {
+		return MetaDataBuilder.getFields(dbConnection);
 	}
 	
 }

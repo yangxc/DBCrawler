@@ -49,9 +49,9 @@ public class MetaDataBuilder {
 	 * @param DBType 数据库类型
 	 * @return
 	 */
-	public static List<DbTable> getTables(DbConnection dbConnection, String DBType) {
+	public static List getTables(DbConnection dbConnection) {
 		try {
-			if(DBType == null) DBType = "mysql";
+			String DBType = "mysql";
 			Class.forName(dbConnection.getDriver());
 			Connection con = (Connection) DriverManager.getConnection(dbConnection.getUrl(),
 					dbConnection.getUser(), dbConnection.getPassword());
@@ -65,19 +65,14 @@ public class MetaDataBuilder {
 			}else if("sqlserver".equals(DBType)){
 				result = statement.executeQuery("Select Name FROM SysObjects Where XType='U' ORDER BY Name ");
 			}
-			List<DbTable> tables = new ArrayList<DbTable>();
-			DbTable jdbcTable = null;
+			List tables = new ArrayList();
 			if("sqlserver".equals(DBType)){
 				while (result.next()) {
-					jdbcTable = new DbTable();
-					jdbcTable.setName(result.getString("name"));
-					tables.add(jdbcTable);
+					tables.add(result.getString("name"));
 				} 
 			}else {
 				while (result.next()) {
-					jdbcTable = new DbTable();
-					jdbcTable.setName(result.getString("table_name"));
-					tables.add(jdbcTable);
+					tables.add(result.getString("table_name"));
 				} 
 			}
 			result.close();
@@ -97,27 +92,23 @@ public class MetaDataBuilder {
 	 * @param jdbc
 	 * @return
 	*/
-	public static List<DbField> getFields(DbConnection dbConnection, DbTable table) {
+	public static List getFields(DbConnection dbConnection) {
 		try {
 			Class.forName(dbConnection.getDriver());
 			Connection con = (Connection) DriverManager.getConnection(dbConnection.getUrl(),
 					dbConnection.getUser(), dbConnection.getPassword());
 			Statement statement = con.createStatement();
-			ResultSet result = statement.executeQuery("select * from " + table.getName());
+			ResultSet result = statement.executeQuery("select * from " + dbConnection.getTables().getName());
 			ResultSetMetaData metaData = result.getMetaData();
 			int count = metaData.getColumnCount();
-			List<DbField> jdbcFields = new ArrayList<DbField>();
-			DbField jdbcField = null;
+			List fields = new ArrayList();
 			for (int i = 0; i < count; i++) {
-				jdbcField = new DbField();
-				jdbcField.setName(metaData.getColumnLabel(i + 1));
-				jdbcField.setType(getType(metaData.getColumnType(i+1)));
-				jdbcFields.add(jdbcField);
+				fields.add(metaData.getColumnLabel(i + 1));
 		    }
 			result.close();
 			statement.close();
 			con.close();
-			return jdbcFields;
+			return fields;
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
@@ -140,21 +131,23 @@ public class MetaDataBuilder {
 			
 			// 设置查询条件
 			DbTable table = dbConnection.getTables();
-			ResultSet result = statement.executeQuery(table.getQuery());
+			ResultSet result = statement.executeQuery("select * from " + table.getName());
 			
-			// 得到采集列集合
-			List<DbField> jdbcFields = table.getFields();
+			// 获得所有列
+			ResultSetMetaData metaData = result.getMetaData();
+			int count = metaData.getColumnCount();
+			List fields = new ArrayList();
+			for (int i = 0; i < count; i++) {
+				fields.add(metaData.getColumnLabel(i + 1));
+		    }
+			
+			// 获得所有列的值
 			List obj = new ArrayList();
-			
 			while (result.next()) {
 				Map<String, Object> dataMap = new HashMap<String, Object>();
-				for (DbField field : jdbcFields) {
-					if (null == field.getAs()) {
-						dataMap.put(field.getName(), result.getObject(field.getName()));
-					} else {
-						dataMap.put(field.getAs(), result.getObject(field.getName()));
-					}
-				}
+				for (int i = 0; i < count; i++) {
+					dataMap.put(fields.get(i).toString(), result.getObject(fields.get(i).toString()));
+			    }
 				obj.add(dataMap);
 			}   
 			result.close();

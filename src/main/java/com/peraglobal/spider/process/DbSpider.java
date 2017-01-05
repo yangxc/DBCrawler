@@ -68,36 +68,38 @@ public class DbSpider extends SdcSpider {
 		
 		while (true) {
 			if (spiderMonitor()) {
-				// 监控日志，后续完善
+				historyService.stopHistory(crawler.getCrawlerId());
 				break;
 			}
 			try {
 				List data = MetaDataBuilder.getRowDatas(this.dbConnection);
 				if (data != null && data.size() > 0) {
 					for (int i = 0; i < data.size(); i++) {
+						
 						// 采集到数据转换为 Json 格式
 						String jsonData = JSONObject.toJSONString(data.get(i));
 						
 						// 生成 MD5 码
 						String md5 = IDGenerate.EncoderByMd5(jsonData);
 						
-						// 判断数据是否存在
-						Metadata metadata = metadataService.getMetadataByMd(md5);
-						if (metadata == null) {
-							
-							// 持久化元数据
-							metadata = new Metadata();
-							metadata.setCrawlerId(crawler.getCrawlerId());
-							metadata.setMd(md5);
-							metadata.setMetadata(jsonData);
-							metadataService.createMetadata(metadata);
-							
-							// 监控日志，后续完善
-							historyService.updatePageCount(crawler.getCrawlerId());
+						// 持久化元数据
+						Metadata metadata = new Metadata();
+						metadata.setCrawlerId(crawler.getCrawlerId());
+						metadata.setMd(md5);
+						metadata.setMetadata(jsonData);
+						metadataService.createMetadata(metadata);
+						
+						// 监控日志，后续完善
+						historyService.updatePageCount(crawler.getCrawlerId());
+						Thread.sleep(500); // 休眠 0.5 秒
+						
+						if (spiderMonitor() && data.size() == i) {
+							historyService.stopHistory(crawler.getCrawlerId());
+							break;
 						}
 					}
 				}
-				Thread.sleep(500); // 休眠 0.5 秒
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 				historyService.updateExcetion(crawler.getCrawlerId(), e.getMessage());

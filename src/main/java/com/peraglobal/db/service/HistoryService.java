@@ -53,7 +53,7 @@ public class HistoryService {
 	public String createHistory(History history) throws Exception {
 		// 设置历史记录的版本号
 		List<History> listorys = historyMapper.getHistorysByCrawlerId(history.getCrawlerId());
-		int version = 1;
+		int version = 0;
 		if (listorys != null && listorys.size() > 0) {
 			version = historyMapper.queryVersion(history.getCrawlerId());
 		}

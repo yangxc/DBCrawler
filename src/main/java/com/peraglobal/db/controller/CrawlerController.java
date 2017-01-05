@@ -173,10 +173,27 @@ public class CrawlerController {
 	 */
 	@SuppressWarnings("static-access")
 	@RequestMapping(value = "/getTables", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<DbTable>> getTables(@RequestBody DbConnection dbConnection) {
+	public ResponseEntity<List> getTables(@RequestBody DbConnection dbConnection) {
 		try {
-			List<DbTable> tables = spiderService.getTables(dbConnection);
+			List tables = spiderService.getTables(dbConnection);
 			return new ResponseEntity<>(HttpStatus.OK).accepted().body(tables);
+		} catch (Exception e) {}
+		return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+	}
+	
+	/**
+	 * 获取列的集合
+	 * @see 2017-1-5	 
+	 * @param jdbc 数据库连接驱动
+	 * @return 状态码
+	 * @since 1.0
+	 */
+	@SuppressWarnings("static-access")
+	@RequestMapping(value = "/getFields", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List> getFields(@RequestBody DbConnection dbConnection) {
+		try {
+			List fields = spiderService.getFields(dbConnection);
+			return new ResponseEntity<>(HttpStatus.OK).accepted().body(fields);
 		} catch (Exception e) {}
 		return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
 	}
@@ -188,8 +205,8 @@ public class CrawlerController {
 	 * @since 1.0
 	 */
 	@SuppressWarnings("static-access")
-	@RequestMapping(value = "/getHistoryByTaskId/{crawlerId}", method = RequestMethod.GET)
-	public ResponseEntity<List<History>> getHistoryByTaskId(@PathVariable("crawlerId") String crawlerId) {
+	@RequestMapping(value = "/getHistoryByCrawlerId/{crawlerId}", method = RequestMethod.GET)
+	public ResponseEntity<List<History>> getHistoryByCrawlerId(@PathVariable("crawlerId") String crawlerId) {
 		try {
 			List<History> historys = historyService.getHistorysByCrawlerId(crawlerId);
 			return new ResponseEntity<>(HttpStatus.OK).accepted().body(historys);

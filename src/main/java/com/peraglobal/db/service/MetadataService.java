@@ -60,15 +60,11 @@ public class MetadataService {
 	 * @throws Exception
 	 */
 	public String createMetadata(Metadata metadata) throws Exception {
-		Metadata meta = metadataMapper.getMetadataByMd(metadata.getMd());
-		if(meta == null) {
-			metadata.setMetadataId(IDGenerate.uuid());
-			metadata.setCreateTime(new Date());
-			metadata.setUpdateTime(new Date());
-			metadataMapper.createMetadata(metadata);
-			return metadata.getMetadataId();
-		}
-		return null;
+		metadata.setMetadataId(IDGenerate.uuid());
+		metadata.setCreateTime(new Date());
+		metadata.setUpdateTime(new Date());
+		metadataMapper.createMetadata(metadata);
+		return metadata.getMetadataId();
 	}
 
 	/**

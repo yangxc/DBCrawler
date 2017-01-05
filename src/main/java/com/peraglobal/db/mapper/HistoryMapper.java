@@ -28,7 +28,7 @@ public interface HistoryMapper {
 	 * @param crawlerId 爬虫 ID
 	 * @return List<History> 历史记录列表
 	 */
-	@Select("select * from history where crawlerId = #{crawlerId}")
+	@Select("select * from history where crawlerId = #{crawlerId} order by version")
     public List<History> getHistorysByCrawlerId(String crawlerId);
    
 	/**
