@@ -27,7 +27,7 @@ public interface MetadataMapper {
 	 * @param crawlerId 爬虫 ID
 	 * @return List<Metadata> 元数据列表
 	 */
-	@Select("select * from metadata where crawlerId = #{crawlerId}")
+	@Select("select * from metadata where crawlerId = #{crawlerId} limit 0, 100")
     public List<Metadata> getMetadatasByCrawlerId(String crawlerId);
    
 	/**
