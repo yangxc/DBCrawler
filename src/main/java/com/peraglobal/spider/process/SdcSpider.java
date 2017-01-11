@@ -4,10 +4,11 @@ import com.peraglobal.spider.model.DbConst;
 
 /**
  * 爬虫任务基类
+ * 
  * @author hadoop
  */
 public abstract class SdcSpider implements Runnable {
-	
+
 	private String spiderState;
 	private String spiderName;
 
@@ -31,7 +32,7 @@ public abstract class SdcSpider implements Runnable {
 	 * 线程业务处理
 	 */
 	public abstract void execute();
-	
+
 	@Override
 	public void run() {
 		this.execute();

@@ -19,39 +19,42 @@ import com.peraglobal.db.service.HistoryService;
 import com.peraglobal.db.service.SpiderService;
 import com.peraglobal.spider.model.DbConnection;
 import com.peraglobal.spider.model.DbCrawler;
-import com.peraglobal.spider.model.DbTable;
 import com.peraglobal.db.model.Metadata;
 import com.peraglobal.db.service.MetadataService;
 
-
 /**
- *  <code>CrawlerController.java</code>
- *  <p>功能:数据库采集 Controller
- *  
- *  <p>Copyright 安世亚太 2016 All right reserved.
- *  @author yongqian.liu	
- *  @version 1.0 
- *  </br>最后修改人 无
+ * <code>CrawlerController.java</code>
+ * <p>
+ * 功能:数据库采集 Controller
+ * 
+ * <p>
+ * Copyright 安世亚太 2016 All right reserved.
+ * 
+ * @author yongqian.liu
+ * @version 1.0 </br>
+ * 			最后修改人 无
  */
 @RestController
 @RequestMapping("db")
 public class CrawlerController {
-	
+
 	@Autowired
 	private CrawlerService crawlerService;
-	
+
 	@Autowired
 	private SpiderService spiderService;
-	
+
 	@Autowired
 	private HistoryService historyService;
-	
+
 	@Autowired
 	private MetadataService metadataService;
-	
+
 	/**
 	 * 获得数据库采集列表
-	 * @param groupId 组Id （多用户区分不同用户）
+	 * 
+	 * @param groupId
+	 *            组Id （多用户区分不同用户）
 	 * @return List<Crawler> 数据库采集列表
 	 * @since 1.0
 	 */
@@ -65,10 +68,12 @@ public class CrawlerController {
 			return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
 		}
 	}
-	
+
 	/**
 	 * 获得数据库采集
-	 * @param crawlerId 数据库采集 ID
+	 * 
+	 * @param crawlerId
+	 *            数据库采集 ID
 	 * @return crawler 数据库采集
 	 * @since 1.0
 	 */
@@ -82,10 +87,12 @@ public class CrawlerController {
 			return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
 		}
 	}
-	
+
 	/**
 	 * 创建数据库采集
-	 * @param crawler 数据库采集对象
+	 * 
+	 * @param crawler
+	 *            数据库采集对象
 	 * @return crawlerId 创建成功返回数据库采集 ID
 	 * @since 1.0
 	 */
@@ -94,7 +101,7 @@ public class CrawlerController {
 	public ResponseEntity<String> createCrawler(@RequestBody DbCrawler dbCrawler) {
 		try {
 			String crawlerId = crawlerService.createCrawler(dbCrawler);
-			if(crawlerId != null) {
+			if (crawlerId != null) {
 				return new ResponseEntity<>(HttpStatus.CREATED).accepted().body(crawlerId);
 			}
 		} catch (Exception e) {
@@ -102,10 +109,12 @@ public class CrawlerController {
 		}
 		return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
 	}
-	
+
 	/**
 	 * 移除数据库采集
-	 * @param crawlerId 数据库采集 ID
+	 * 
+	 * @param crawlerId
+	 *            数据库采集 ID
 	 * @return 状态码
 	 * @since 1.0
 	 */
@@ -114,13 +123,16 @@ public class CrawlerController {
 		try {
 			crawlerService.removeCrawler(crawlerId);
 			return new ResponseEntity<>(HttpStatus.OK);
-		} catch (Exception e) {}
+		} catch (Exception e) {
+		}
 		return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
 	}
-	
+
 	/**
 	 * 编辑数据库采集
-	 * @param crawler 数据库采集对象
+	 * 
+	 * @param crawler
+	 *            数据库采集对象
 	 * @return 状态码
 	 * @since 1.0
 	 */
@@ -129,13 +141,16 @@ public class CrawlerController {
 		try {
 			crawlerService.editCrawler(dbCrawler);
 			return new ResponseEntity<>(HttpStatus.OK);
-		} catch (Exception e) {}
+		} catch (Exception e) {
+		}
 		return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
 	}
-	
+
 	/**
 	 * 开始数据库采集
-	 * @param crawler 数据库采集对象
+	 * 
+	 * @param crawler
+	 *            数据库采集对象
 	 * @return 状态码
 	 * @since 1.0
 	 */
@@ -144,14 +159,17 @@ public class CrawlerController {
 		try {
 			crawlerService.start(crawlerId);
 			return new ResponseEntity<>(HttpStatus.OK);
-		} catch (Exception e) {}
+		} catch (Exception e) {
+		}
 		return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
 	}
-	
+
 	/**
 	 * 停止数据库采集
-	 * @see 2016-12-7	 
-	 * @param crawler 数据库采集
+	 * 
+	 * @see 2016-12-7
+	 * @param crawler
+	 *            数据库采集
 	 * @return 状态码
 	 * @since 1.0
 	 */
@@ -160,47 +178,56 @@ public class CrawlerController {
 		try {
 			crawlerService.stop(crawlerId);
 			return new ResponseEntity<>(HttpStatus.OK);
-		} catch (Exception e) {}
+		} catch (Exception e) {
+		}
 		return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
 	}
-	
+
 	/**
 	 * 获取表的集合
-	 * @see 2016-12-16	 
-	 * @param jdbc 数据库连接驱动
+	 * 
+	 * @see 2016-12-16
+	 * @param jdbc
+	 *            数据库连接驱动
 	 * @return 状态码
 	 * @since 1.0
 	 */
-	@SuppressWarnings("static-access")
+	@SuppressWarnings({ "static-access", "rawtypes" })
 	@RequestMapping(value = "/getTables", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List> getTables(@RequestBody DbConnection dbConnection) {
 		try {
 			List tables = spiderService.getTables(dbConnection);
 			return new ResponseEntity<>(HttpStatus.OK).accepted().body(tables);
-		} catch (Exception e) {}
+		} catch (Exception e) {
+		}
 		return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
 	}
-	
+
 	/**
 	 * 获取列的集合
-	 * @see 2017-1-5	 
-	 * @param jdbc 数据库连接驱动
+	 * 
+	 * @see 2017-1-5
+	 * @param jdbc
+	 *            数据库连接驱动
 	 * @return 状态码
 	 * @since 1.0
 	 */
-	@SuppressWarnings("static-access")
+	@SuppressWarnings({ "static-access", "rawtypes" })
 	@RequestMapping(value = "/getFields", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List> getFields(@RequestBody DbConnection dbConnection) {
 		try {
 			List fields = spiderService.getFields(dbConnection);
 			return new ResponseEntity<>(HttpStatus.OK).accepted().body(fields);
-		} catch (Exception e) {}
+		} catch (Exception e) {
+		}
 		return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
 	}
-	
+
 	/**
 	 * 根据爬虫 ID 获得数据库采集历史记录
-	 * @param crawlerId 爬虫 ID
+	 * 
+	 * @param crawlerId
+	 *            爬虫 ID
 	 * @return List<History> 历史记录
 	 * @since 1.0
 	 */
@@ -214,10 +241,12 @@ public class CrawlerController {
 			return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
 		}
 	}
-	
+
 	/**
 	 * 根据爬虫ID 获得任务采集数量
-	 * @param crawlerId 爬虫 ID
+	 * 
+	 * @param crawlerId
+	 *            爬虫 ID
 	 * @return Integer 采集数量
 	 * @since 1.0
 	 */
@@ -231,10 +260,12 @@ public class CrawlerController {
 			return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
 		}
 	}
-	
+
 	/**
 	 * 根据爬虫ID 获得元数据
-	 * @param crawlerId 爬虫 ID
+	 * 
+	 * @param crawlerId
+	 *            爬虫 ID
 	 * @return List<Metadata> 元数据
 	 * @since 1.0
 	 */

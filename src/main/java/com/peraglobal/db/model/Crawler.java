@@ -4,14 +4,17 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- *  <code>Crawler.java</code>
- *  <p>功能：DBCrawler存储类
- *  
- *  <p>Copyright 安世亚太 2016 All right reserved.
- *  @author yongqian.liu	
- *  @version 1.0
- *  @see 2016-12-16
- *  </br>最后修改人 无
+ * <code>Crawler.java</code>
+ * <p>
+ * 功能：DBCrawler存储类
+ * 
+ * <p>
+ * Copyright 安世亚太 2016 All right reserved.
+ * 
+ * @author yongqian.liu
+ * @version 1.0
+ * @see 2016-12-16 </br>
+ * 		最后修改人 无
  */
 public class Crawler implements Serializable {
 
@@ -21,32 +24,32 @@ public class Crawler implements Serializable {
 	 * @category 采集 ID
 	 */
 	private String crawlerId;
-	
+
 	/**
 	 * @category 采集名称
 	 */
 	private String crawlerName;
-	
+
 	/**
 	 * @category 组 ID
 	 */
 	private String groupId;
-	
+
 	/**
 	 * @category 组名称
 	 */
 	private String groupName;
-	
+
 	/**
 	 * @category 状态
 	 */
 	private String state;
-	
+
 	/**
 	 * @category 创建时间
 	 */
 	private Date createTime;
-	
+
 	/**
 	 * @category 更新时间
 	 */

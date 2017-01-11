@@ -4,16 +4,19 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- *  <code>History.java</code>
- *  <p>功能：监控信息，历史记录
- *  
- *  <p>Copyright 安世亚太 2016 All right reserved.
- *  @author yongqian.liu
- *  @version 1.0
- *  @see 2016-12-19
+ * <code>History.java</code>
+ * <p>
+ * 功能：监控信息，历史记录
+ * 
+ * <p>
+ * Copyright 安世亚太 2016 All right reserved.
+ * 
+ * @author yongqian.liu
+ * @version 1.0
+ * @see 2016-12-19
  */
 public class History implements Serializable {
-	
+
 	private static final long serialVersionUID = 4066968352822240331L;
 
 	/**
@@ -25,22 +28,22 @@ public class History implements Serializable {
 	 * @category 爬虫 ID
 	 */
 	private String crawlerId;
-	
+
 	/**
 	 * @category 版本号
 	 */
 	private int version;
-	
+
 	/**
 	 * @category 抓取数据的数量
 	 */
 	private int pageCrawledCount;
-	
+
 	/**
 	 * @category 指示是否存在异常
 	 */
 	private int hasException;
-	
+
 	/**
 	 * @category 异常对应的信息
 	 */
@@ -50,17 +53,17 @@ public class History implements Serializable {
 	 * @category 爬虫的启动时间
 	 */
 	private Date startDate;
-	
+
 	/**
 	 * @category 爬虫的停止时间
 	 */
 	private Date StopDate;
-	
+
 	/**
 	 * @category 创建时间
 	 */
 	private Date createTime;
-	
+
 	/**
 	 * @category 更新时间
 	 */
@@ -146,6 +149,4 @@ public class History implements Serializable {
 		this.updateTime = updateTime;
 	}
 
-	
-	
 }

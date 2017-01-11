@@ -4,14 +4,17 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- *  <code>Metadata.java</code>
- *  <p>功能：元数据存储类
- *  
- *  <p>Copyright 安世亚太 2016 All right reserved.
- *  @author yongqian.liu	
- *  @version 1.0
- *  @see 2016-12-19
- *  </br>最后修改人 无
+ * <code>Metadata.java</code>
+ * <p>
+ * 功能：元数据存储类
+ * 
+ * <p>
+ * Copyright 安世亚太 2016 All right reserved.
+ * 
+ * @author yongqian.liu
+ * @version 1.0
+ * @see 2016-12-19 </br>
+ * 		最后修改人 无
  */
 public class Metadata implements Serializable {
 
@@ -26,22 +29,22 @@ public class Metadata implements Serializable {
 	 * @category 爬虫 ID
 	 */
 	private String crawlerId;
-	
+
 	/**
 	 * @category 元数据 json 格式
 	 */
 	private String metadata;
-	
+
 	/**
 	 * @category md5 码
 	 */
 	private String md;
-	
+
 	/**
 	 * @category 创建时间
 	 */
 	private Date createTime;
-	
+
 	/**
 	 * @category 更新时间
 	 */
@@ -71,7 +74,6 @@ public class Metadata implements Serializable {
 		this.metadata = metadata;
 	}
 
-
 	public String getMd() {
 		return md;
 	}
@@ -95,5 +97,5 @@ public class Metadata implements Serializable {
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
 	}
-	
+
 }
